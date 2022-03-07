@@ -1,0 +1,111 @@
+---
+title: "Average Daily Temperatures of New York and San Francisco in 2021"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{temps}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Let's compare the daily average temperatures of two major cities in the United States:  
+- New York, New York in the Northeastern US with its hot, humid summers and cold, occasionally snowy winters, and 
+- San Francisco, California on the West Coast, with its mostly temperate year-round climate.
+
+The `ggbraid` package provides an example dataset called `temps`
+
+```{r setup}
+library(ggplot2)
+library(ggbraid)
+library(dplyr)
+library(tidyr)
+
+data(temps)
+
+temps
+```
+
+```{r}
+
+fahrenheit <- function(x, ...) format(paste(x, "°F"), ...)
+
+p <- ggplot() +
+  geom_line(data = temps, aes(x = date, y = avg, linetype = city)) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+  scale_y_continuous(breaks = seq(20, 90, by = 10), labels = fahrenheit) +
+  labs(
+    title = "Average Daily Temperatures of New York and San Francisco in 2021",
+    linetype = NULL,
+    fill = NULL,
+    y = NULL,
+    x = NULL 
+  ) +
+  guides(fill = "none") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title.position = "plot",
+    legend.position = c(0.85, 0.125),
+    legend.box = "horizontal",
+    legend.key = element_blank(),
+    legend.background = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
+
+p
+```
+
+```{r}
+temps_wide <- temps %>%
+  select(-min, -max) %>%
+  pivot_wider(names_from = city, values_from = avg) %>%
+  rename(ny = `New York`, sf = `San Francisco`)
+
+temps_wide
+```
+
+```{r}
+p +
+  geom_ribbon(
+    data = temps_wide,
+    aes(x = date, ymin = sf, ymax = ny),
+    alpha = 0.3
+  )
+```
+
+```{r}
+p +
+  geom_ribbon(
+    data = temps_wide,
+    aes(x = date, ymin = ny, ymax = sf, fill = sf > ny),
+    alpha = 0.7
+  )
+```
+
+```{r}
+p +
+  geom_braid(
+    data = temps_wide,
+    aes(x = date, ymin = ny, ymax = sf, fill = sf > ny),
+    alpha = 0.7
+  )
+```
+
+```{r}
+hues <- scales::hue_pal()(2)  # ggplot2 default color palette
+
+p +
+  geom_braid(
+    data = temps_wide,
+    aes(x = date, ymin = ny, ymax = sf, fill = sf > ny),
+    alpha = 0.7
+  ) +
+  annotate("text", x = as.Date("2021-01-01"), y = 86, label = "New York is warmer than San Francisco", hjust = 0, color = hues[1]) +
+  annotate("text", x = as.Date("2021-03-01"), y = 25, label = "New York is colder than San Francisco", hjust = 0, color = hues[2])
+```
