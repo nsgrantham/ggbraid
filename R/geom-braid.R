@@ -14,10 +14,21 @@ geom_braid <- function(
 	stat = "braid",
 	position = "identity",
 	...,
+	method = NULL,
 	na.rm = FALSE,
 	show.legend = NA,
 	inherit.aes = TRUE
 ) {
+
+	params <- list(
+		na.rm = na.rm,
+		...
+	)
+
+	if (identical(stat, "braid")) {
+		params$method <- method
+	}
+
 	layer(
 		data = data,
 		mapping = mapping,
@@ -26,10 +37,7 @@ geom_braid <- function(
 		position = position,
 		show.legend = show.legend,
 		inherit.aes = inherit.aes,
-		params = list(
-			na.rm = na.rm,
-			...
-		)
+		params = params
 	)
 }
 
