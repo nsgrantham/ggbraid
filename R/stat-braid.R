@@ -51,6 +51,10 @@ StatBraid <- ggproto("StatBraid", Stat,
 
 	compute_panel = function(data, scales, method = NULL) {
 
+		if (! "fill" %in% names(data)) {
+			return(data)
+		}
+
 		data <- transform(data,
 			y1 = ymin,
 			y2 = ymax,
@@ -58,18 +62,81 @@ StatBraid <- ggproto("StatBraid", Stat,
 			ymax = pmax(ymin, ymax)
 		)
 
+		data <- data[order(data$x), ]
+
 		if (! "fill" %in% names(data)) return(data)
 
-		data <- data[order(data$x), ]
+		fill_groups <- unique(subset(data, select = c(fill, group)))
+		fill_vals <- fill_groups$fill
+		group_vals <- fill_groups$group
 
 		# To define a braid we need to combine three different data frames.
 		# We call these data frames braid1, braid2, and braid3.
 
-		# The simplest data frame is braid1. It contains all rows in data for which
-		# ymax > ymin. Put another way, it includes all non-intersection points in
-		# the original data.
+		x_dups <- unique(data$x[duplicated(data$x)])
 
-		braid1 <- subset(data, ymax > ymin, select = -c(y1, y2))
+		braid1a <- data.frame()
+		for (x_dup in x_dups) {
+			sub <- unique(subset(data, x == x_dup))
+			sub_lead <- transform(sub,
+				y1 = lead1(y1),
+				y2 = lead1(y2),
+				fill = lead1(fill)
+			)
+			sub_lead <- transform(sub_lead,
+				ymin = pmin(y1, y2),
+				ymax = pmax(y1, y2),
+				group = group_vals[sapply(fill, function(x) which(x == fill_vals))]
+			)
+			for (i in 1:nrow(sub)) {
+				sub_i <- sub[i, ]
+				sub_lead_i <- sub_lead[i, ]
+				sub_next_i <- data.frame()
+				if (sub_i$fill != sub_lead_i$fill) {
+					is_y1_equal <- sub_i$y1 == sub_lead_i$y1
+					is_y2_equal <- sub_i$y2 == sub_lead_i$y2
+					if (is_y1_equal) {
+						sub_next_i <- rbind(
+							transform(sub_lead_i,
+								ymin = y1,
+								ymax = y1,
+								fill = fill_vals[1],
+								group = group_vals[1]
+							),
+							transform(sub_lead_i,
+								ymin = y1,
+								ymax = y1,
+								fill = fill_vals[2],
+								group = group_vals[2]
+							)
+						)
+				  }
+					if (is_y2_equal) {
+						sub_next_i <- rbind(
+							transform(sub_lead_i,
+								ymin = y2,
+								ymax = y2,
+								fill = fill_vals[1],
+								group = group_vals[1]
+							),
+							transform(sub_lead_i,
+								ymin = y2,
+								ymax = y2,
+								fill = fill_vals[2],
+								group = group_vals[2]
+							)
+						)
+					}
+				}
+				braid1a <- rbind(braid1a, sub_i, sub_next_i)
+			}
+		}
+		braid1a <- unique(subset(braid1a, select = -c(y1, y2)))
+
+		braid1b <- subset(data,
+			!(x %in% x_dups) & (ymax > ymin),
+			select = -c(y1, y2)
+		)
 
 		# braid2 includes all intersection points in the original data, with
 		# additional rows
@@ -81,9 +148,12 @@ StatBraid <- ggproto("StatBraid", Stat,
 		braid2 <- transform(braid2, group = as.integer(as.factor(fill)))
 		braid2 <- subset(braid2, ymax == ymin, select = -c(y1, y2))
 		braid2 <- unique(braid2)
+		braid2 <- braid2[order(braid2$x), ]
 
 		# Lastly, we calculate the intersection points between y1 and y2 that do not
 		# exist in data.
+
+		braid3 <- data.frame()
 
 		if (identical(method, "line")) {
 		  # Consider the intersection of two lines:
@@ -114,7 +184,10 @@ StatBraid <- ggproto("StatBraid", Stat,
 		  	a = x,  c = lead1(x),  e = x,  g = lead1(x),
 	      b = y1, d = lead1(y1), f = y2, h = lead1(y2)
 		  )
-		  braid3 <- subset(braid3, ((b > f) & (d < h)) | ((b < f) & (d > h)))
+		  braid3 <- subset(braid3,
+		  	(a < c) & ((b > f) & (d < h)) | ((b < f) & (d > h))
+		  )
+		  print(braid3)
 		  braid3 <- transform(braid3,
 		  	w = (a - c) * (f - h) - (b - d) * (e - g),
 		  	u = a * d - b * c,
@@ -138,6 +211,13 @@ StatBraid <- ggproto("StatBraid", Stat,
 			)
 		}
 
-		rbind(braid1, braid2, braid3)
+		braid <- rbind(
+			braid1a,
+			braid1b,
+			braid2,
+			braid3
+		)
+		braid <- unique(braid[order(braid$x), ])
+		braid
 	}
 )
