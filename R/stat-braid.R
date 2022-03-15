@@ -51,9 +51,24 @@ StatBraid <- ggproto("StatBraid", Stat,
 
 	compute_panel = function(data, scales, method = NULL) {
 
-		if (! "fill" %in% names(data)) {
+		has_fill <- "fill" %in% names(data)
+		has_colour <- "colour" %in% names(data)
+
+		if (!has_fill & !has_colour) {
 			return(data)
 		}
+
+		if (has_fill & has_colour) {
+			stopifnot(
+				"fill and colour must be the same" = with(data, all(fill == colour))
+			)
+		}
+
+		if (!has_fill & has_colour) {
+			data <- transform(data, fill = colour)
+		}
+
+		data <- with(data, data[order(x), ])
 
 		data <- transform(data,
 			y1 = ymin,
@@ -62,162 +77,102 @@ StatBraid <- ggproto("StatBraid", Stat,
 			ymax = pmax(ymin, ymax)
 		)
 
-		data <- data[order(data$x), ]
+		braid <- data.frame(matrix(nrow = 0, ncol = ncol(data)))
+		colnames(braid) <- colnames(data)
 
-		if (! "fill" %in% names(data)) return(data)
+		n <- nrow(data)
+		for (i in 1:n) {
+			curr_row <- data[i, ]
+			braid <- rbind(braid, curr_row)
 
-		fill_groups <- unique(subset(data, select = c(fill, group)))
-		fill_vals <- fill_groups$fill
-		group_vals <- fill_groups$group
+			if (i == n) {
+				break
+			}
 
-		# To define a braid we need to combine three different data frames.
-		# We call these data frames braid1, braid2, and braid3.
+			next_row <- data[i + 1, ]
 
-		x_dups <- unique(data$x[duplicated(data$x)])
+			if (curr_row$fill == next_row$fill) {
+				next
+			}
 
-		braid1a <- data.frame()
-		for (x_dup in x_dups) {
-			sub <- unique(subset(data, x == x_dup))
-			sub_lead <- transform(sub,
-				y1 = lead1(y1),
-				y2 = lead1(y2),
-				fill = lead1(fill)
-			)
-			sub_lead <- transform(sub_lead,
-				ymin = pmin(y1, y2),
-				ymax = pmax(y1, y2),
-				group = group_vals[sapply(fill, function(x) which(x == fill_vals))]
-			)
-			for (i in 1:nrow(sub)) {
-				sub_i <- sub[i, ]
-				sub_lead_i <- sub_lead[i, ]
-				sub_next_i <- data.frame()
-				if (sub_i$fill != sub_lead_i$fill) {
-					is_y1_equal <- sub_i$y1 == sub_lead_i$y1
-					is_y2_equal <- sub_i$y2 == sub_lead_i$y2
-					if (is_y1_equal) {
-						sub_next_i <- rbind(
-							transform(sub_lead_i,
-								ymin = y1,
-								ymax = y1,
-								fill = fill_vals[1],
-								group = group_vals[1]
-							),
-							transform(sub_lead_i,
-								ymin = y1,
-								ymax = y1,
-								fill = fill_vals[2],
-								group = group_vals[2]
-							)
-						)
-				  }
-					if (is_y2_equal) {
-						sub_next_i <- rbind(
-							transform(sub_lead_i,
-								ymin = y2,
-								ymax = y2,
-								fill = fill_vals[1],
-								group = group_vals[1]
-							),
-							transform(sub_lead_i,
-								ymin = y2,
-								ymax = y2,
-								fill = fill_vals[2],
-								group = group_vals[2]
-							)
-						)
-					}
+			if (next_row$ymin == next_row$ymax) {  # explicit intersection
+				braid <- rbind(
+					braid,
+				  transform(next_row, fill = curr_row$fill, group = curr_row$group)
+				)
+				next
+			}
+
+			if (next_row$x > curr_row$x) {
+				# Consider the intersection of two lines:
+				# one defined by points (a, b) and (c, d), and another defined by points
+				# (e, f) and (g, h).
+			  #
+	  	  #              • (g, h)
+	  	  #             /
+			  #  (a, b)    /
+			  #        •--o--•
+			  #          /    (c, d)
+			  #         /
+			  #        • (e, f)
+			  #
+			  # If b > f and d < h, or if b < f and d > h, then the two lines intersect
+				# at a single point (x0, y0) defined by
+			  #   x0 = (u * (e - g) - v * (a - c)) / w
+			  # 	y0 = (u * (f - h) - v * (b - d)) / w
+			  # where
+			  #		u = a * d - b * c
+			  #   v = e * h - f * g
+			  #   w = (a - c) * (f - h) - (b - d) * (e - g)
+			  #
+			  # For more information on this formula, visit
+			  # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line
+
+				a <- curr_row$x
+				e <- curr_row$x
+				c <- next_row$x
+				g <- next_row$x
+				b <- curr_row$y1
+				f <- curr_row$y2
+				d <- next_row$y1
+				h <- next_row$y2
+
+				w <- (a - c) * (f - h) - (b - d) * (e - g)
+			 	u <- a * d - b * c
+			 	v <- e * h - f * g
+
+			 	x0 <- (u * (e - g) - v * (a - c)) / w
+			 	y0 <- (u * (f - h) - v * (b - d)) / w
+
+			 	braid <- rbind(
+			 		braid,
+			 		transform(curr_row, x = x0, ymin = y0, ymax = y0),
+			 		transform(next_row, x = x0, ymin = y0, ymax = y0)
+			 	)
+			 	next
+			}
+
+			if (next_row$x == curr_row$x) {
+				if (next_row$y1 == curr_row$y1) {
+					braid <- rbind(
+						braid,
+						transform(curr_row, ymin = y1, ymax = y1),
+						transform(next_row, ymin = y1, ymax = y1)
+					)
 				}
-				braid1a <- rbind(braid1a, sub_i, sub_next_i)
+
+				if (next_row$y2 == curr_row$y2) {
+					braid <- rbind(
+						braid,
+						transform(curr_row, ymin = y2, ymax = y2),
+						transform(next_row, ymin = y2, ymax = y2)
+					)
+				}
+
+				# TODO condition where both lines are vertical
 			}
 		}
-		braid1a <- unique(subset(braid1a, select = -c(y1, y2)))
 
-		braid1b <- subset(data,
-			!(x %in% x_dups) & (ymax > ymin),
-			select = -c(y1, y2)
-		)
-
-		# braid2 includes all intersection points in the original data, with
-		# additional rows
-
-		braid2 <- rbind(
-			transform(data, fill = lag1(fill)),
-			transform(data, fill = lead1(fill))
-		)
-		braid2 <- transform(braid2, group = as.integer(as.factor(fill)))
-		braid2 <- subset(braid2, ymax == ymin, select = -c(y1, y2))
-		braid2 <- unique(braid2)
-		braid2 <- braid2[order(braid2$x), ]
-
-		# Lastly, we calculate the intersection points between y1 and y2 that do not
-		# exist in data.
-
-		braid3 <- data.frame()
-
-		if (identical(method, "line")) {
-		  # Consider the intersection of two lines:
-			# one defined by points (a, b) and (c, d), and another defined by points
-			# (e, f) and (g, h).
-		  #
-	    #              • (g, h)
-	    #             /
-		  #  (a, b)    /
-		  #        •--o--•
-		  #          /    (c, d)
-		  #         /
-		  #        • (e, f)
-		  #
-		  # If b > f and d < h, or if b < f and d > h, then the two lines intersect
-			# at a single point (x, y) defined by
-		  #   x = (u * (e - g) - v * (a - c)) / w
-		  # 	y = (u * (f - h) - v * (b - d)) / w
-		  # where
-		  #		u = a * d - b * c
-		  #   v = e * h - f * g
-		  #   w = (a - c) * (f - h) - (b - d) * (e - g)
-		  #
-		  # For more information on this formula, visit
-		  # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line
-
-			braid3 <- transform(data,
-		  	a = x,  c = lead1(x),  e = x,  g = lead1(x),
-	      b = y1, d = lead1(y1), f = y2, h = lead1(y2)
-		  )
-		  braid3 <- subset(braid3,
-		  	(a < c) & ((b > f) & (d < h)) | ((b < f) & (d > h))
-		  )
-		  print(braid3)
-		  braid3 <- transform(braid3,
-		  	w = (a - c) * (f - h) - (b - d) * (e - g),
-		  	u = a * d - b * c,
-		  	v = e * h - f * g
-		  )
-		  braid3 <- transform(braid3,
-		  	x = (u * (e - g) - v * (a - c)) / w,
-		  	y = (u * (f - h) - v * (b - d)) / w
-		  )
-		  braid3 <- transform(braid3, ymax = y, ymin = y)
-		  braid3 <- subset(braid3, select = x:ymax)
-		}
-
-		if (nrow(braid3) > 0) {
-			fills <- unique(data$fill)
-			groups <- unique(as.integer(as.factor(data$fill)))
-			panel <- data$PANEL[1]
-			braid3 <- rbind(
-				transform(braid3, fill = fills[1], PANEL = panel, group = groups[1]),
-				transform(braid3, fill = fills[2], PANEL = panel, group = groups[2])
-			)
-		}
-
-		braid <- rbind(
-			braid1a,
-			braid1b,
-			braid2,
-			braid3
-		)
-		braid <- unique(braid[order(braid$x), ])
 		braid
 	}
 )
