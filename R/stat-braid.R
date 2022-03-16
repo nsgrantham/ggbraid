@@ -159,20 +159,28 @@ StatBraid <- ggproto("StatBraid", Stat,
 						transform(curr_row, ymin = y1, ymax = y1),
 						transform(next_row, ymin = y1, ymax = y1)
 					)
-				}
-
-				if (next_row$y2 == curr_row$y2) {
+				} else if (next_row$y2 == curr_row$y2) {
 					braid <- rbind(
 						braid,
 						transform(curr_row, ymin = y2, ymax = y2),
 						transform(next_row, ymin = y2, ymax = y2)
 					)
+				} else {
+					# Two overlapping vertical lines so there are infinite intersections.
+					# Define a single point to serve as a reasonable intersection.
+					y2_mid <- (next_row$y2 + curr_row$y2) / 2
+					y1_mid <- (next_row$y1 + curr_row$y1) / 2
+					y0_mid <- (y1_mid + y2_mid) / 2
+					braid <- rbind(
+						braid,
+						transform(curr_row, ymin = y0, ymax = y0),
+						transform(next_row, ymin = y0, ymax = y0)
+					)
 				}
-
-				# TODO condition where both lines are vertical
 			}
 		}
 
-		braid
+		drop_vars <- c("y1", "y2", if (!has_fill) "fill", if (!has_colour) "colour")
+		braid[, setdiff(colnames(braid), drop_vars)]
 	}
 )
