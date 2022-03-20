@@ -14,25 +14,36 @@ knitr::opts_chunk$set(
 )
 ```
 
-Let's compare the daily average temperatures of two major cities in the United States:  
-- New York, New York in the Northeastern US with its hot, humid summers and cold, occasionally snowy winters, and 
-- San Francisco, California on the West Coast, with its mostly temperate year-round climate.
+Let's compare the temperatures of two cities in the United States: New York, New York and San Francisco, California.
 
-The `ggbraid` package provides an example dataset called `temps`
+## Data from the National Weather Service
 
-```{r setup}
-library(ggplot2)
+`ggbraid` provides a data frame called `temps`, with daily average temperatures of New York and San Francisco in 2021 as recorded by the US National Weather Service (NWS) at [weather.gov](https://weather.gov).^[It is difficult to pull data from the NWS. It does not provide the data via an API and the data it returns through its point-and-click interface isn't in plain text format! To make matters worse, you can only retrieve data from a city one month at a time. For San Francisco, visit [weather.gov/wrh/climate?wfo=mtr](https://www.weather.gov/wrh/climate?wfo=mtr) and choose "San Francisco City, CA", "Daily data for a month", and a month from 2021; for New York, visit [weather.gov/wrh/climate?wfo=okx](https://www.weather.gov/wrh/climate?wfo=okx) and choose "NY-Central Park Area", "Daily data for a month", and a month from 2021. Copy and paste the data into spreadsheet software for further processing.]  
+
+```{r temps}
 library(ggbraid)
-library(dplyr)
-library(tidyr)
 
 data(temps)
 
 temps
 ```
 
-```{r}
+`city` is `New York` or `San Francisco`, `date` is a calendar date in the `YYYY-MM-DD` format, and `avg` is the average temperature recorded in degrees Fahrenheit (°F) and rounded to the nearest half degree.^[For those who use degrees Celsius: 0°C is 32°F, 10°C is 50°F, 20°C is 68°F, and 30°C is 86°F.]
 
+What do the daily average temperatures look like?
+
+```{r}
+library(ggplot2)
+
+ggplot(temps, aes(x = date, y = avg, linetype = city)) +
+	geom_line()
+```
+
+We see much higher variability in temperatures in New York compared with San Francisco. This makes sense — New York is in the Northeastern US and experiences hot, humid summers and cold, occassionally snowy winters. San Francisco is on the West Coast and its Mediterranean climate means its temperature does not change much season to season.
+
+Before we proceed further, let's clean up the plot a bit and assign it to a variable `p` so we can reuse it throughout this vignette.
+
+```{r}
 fahrenheit <- function(x, ...) format(paste(x, "°F"), ...)
 
 p <- ggplot() +
@@ -61,7 +72,20 @@ p <- ggplot() +
 p
 ```
 
-```{r}
+Much better.
+
+## Fun with Ribbons
+
+Let's fill the area between the two lines. We can do so with `geom_ribbon()` from `ggplot2`. 
+
+`geom_ribbon()` requires three aesthetics: `x`, `ymin`, and `ymax`. We can map `date` to `x` as we did in `geom_line()`. However, we'll need to transform `temps` to create new variables that we can map to `ymin` and `ymax`.
+
+In particular, we'll need to pivot `temps` wider by taking column names from `city` and values from `avg`. This is straightforward to do with `pivot_wider()` from the `tidyr` package. Call the new data frame `temps_wide`.
+
+```{r, message=FALSE}
+library(dplyr)
+library(tidyr)
+
 temps_wide <- temps %>%
   select(-min, -max) %>%
   pivot_wider(names_from = city, values_from = avg) %>%
@@ -70,14 +94,22 @@ temps_wide <- temps %>%
 temps_wide
 ```
 
+Now we can add a new layer to `p` with `geom_ribbon()` using `temps_wide`.  Map `date` to `x`, `ny` to `ymin`, and `sf` to `ymax`.^[Why not the other way around, with `sf` to `ymin` and `ny` to `ymax`? That's fine too because the lines alternate over/under one another.] Finally, add some transparency with `alpha = 0.3`.
+
 ```{r}
 p +
   geom_ribbon(
     data = temps_wide,
-    aes(x = date, ymin = sf, ymax = ny),
+    aes(x = date, ymin = ny, ymax = sf),
     alpha = 0.3
   )
 ```
+
+Great! Using `geom_ribbon()` we've added a light grey ribbon that runs between the two lines.
+
+On second thought... what if we used two colors for the ribbon? We could have one color when New York is warmer than San Francisco and another color when New York is colder than San Francisco.
+
+This shouldn't be hard to do. Map `sf > ny` to `fill` in `geom_ribbon()` and...
 
 ```{r}
 p +
@@ -87,6 +119,59 @@ p +
     alpha = 0.7
   )
 ```
+
+Chaos. What happened?
+
+## The Unbraided Ribbon Problem
+
+Is this a bug in `geom_ribbon()`?
+
+No, it's not a bug. The problem is that **we haven't dealt with line intersections properly.**
+
+For example, consider rows 80-82 from `temps_wide`:
+
+| date       | ny   | sf   |
+| ---------- | ---- | ---- |
+| 2021-03-21 | 52.5 | 52.0 |
+| 2021-03-22 | 52.0 | 52.0 |
+| 2021-03-23 | 54.5 | 56.5 |
+
+After we have pass `temps_wide` to `geom_ribbon()` and map `date` to `x`, `ny` to `ymin`, `sf` to `ymax`, and `sf > ny` to `fill`, we get the following:
+
+| x     | ymin | ymax | fill  |
+| ----- | ---- | ---- | ----- |
+| 18707 | 52.5 | 52.0 | FALSE |
+| 18708 | 52.0 | 52.0 | FALSE |
+| 18709 | 54.5 | 56.5 | TRUE  |
+
+(`x` is the integer representation of `date`, the number of days since January 1, 1970, the "Unix epoch")
+
+Ok, note the middle row. `ymin` and `ymax` are equal here, so this is a point where the two lines intersect. It turns out that `geom_ribbon()` requires two rows for every line intersection, one row where `fill` is `FALSE` and another row where `fill` is `TRUE`. 
+
+So we must insert a new row in the data, yielding the following:
+
+|   x       |   ymin   |   ymax   |   fill   |
+| --------- | -------- | -------- | -------- |
+|   18707   |   52.5   |   52.0   |   FALSE  |
+|   18708   |   52.0   |   52.0   |   FALSE  |
+| **18708** | **52.0** | **52.0** | **TRUE** |
+|   18709   |   54.5   |   56.5   |   TRUE   |
+
+We call this process _braiding_.
+
+**We must always braid the ribbon where the lines intersect.**
+
+The intersection described here is not the only type that requires braiding.
+
+There are also many instances where the two lines intersect _between_ two rows in the data. In these cases, we must use a mathematical formula to determine the exact point at which the lines intersect and braid the ribbon accordingly.
+
+And there's a third, less common type of intersection that happens when both lines are vertical at the same `x` and therefore intersect at an infinite number of points. 
+
+## Braid with ggbraid
+
+The functions in `ggbraid` take care of all the braiding for you. 
+
+Simply replace `geom_ribbon()` with `geom_braid()`.
 
 ```{r}
 p +
@@ -96,6 +181,27 @@ p +
     alpha = 0.7
   )
 ```
+
+There we go!
+
+Notice the message from `geom_braid()` that it is using `method = 'line'`. Since we've drawn lines with `geom_line()` we must use `method = 'line'` to determine the point at which the lines intersect when the intersection occurs between two rows in the data. We can silence this message by explicity including `method = 'line'` within `geom_braid()`.
+
+`geom_braid()` isn't a new geometry. It takes the data provided, performs the necessary braiding operations on it, and passes the result to `geom_ribbon()` for drawing. If we'd like, we can still use `geom_ribbon()` and set `stat = 'braid'`.
+
+```{r}
+p +
+  geom_ribbon(
+    data = temps_wide,
+    aes(x = date, ymin = ny, ymax = sf, fill = sf > ny),
+    stat = "braid",
+    method = "line",
+    alpha = 0.7
+  )
+```
+
+This is the same plot as before. We've also silenced the message by including `method = 'line'`.
+
+Finally, it may be helpful to label the ribbon colors so it's clear what they represent. This can happen in a legend (which I've turned off with the `guides(fill = "none")` layer in `p`). Another possibility is to provide text annotations on the plot.
 
 ```{r}
 hues <- scales::hue_pal()(2)  # ggplot2 default color palette
@@ -104,8 +210,14 @@ p +
   geom_braid(
     data = temps_wide,
     aes(x = date, ymin = ny, ymax = sf, fill = sf > ny),
+    method = "line",
     alpha = 0.7
   ) +
   annotate("text", x = as.Date("2021-01-01"), y = 86, label = "New York is warmer than San Francisco", hjust = 0, color = hues[1]) +
   annotate("text", x = as.Date("2021-03-01"), y = 25, label = "New York is colder than San Francisco", hjust = 0, color = hues[2])
 ```
+
+## More to Braid
+
+`geom_braid()` also supports `method = 'step'` for use with `geom_step()` — read more at []()
+
