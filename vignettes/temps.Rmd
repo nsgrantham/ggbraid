@@ -35,8 +35,8 @@ What do the daily average temperatures look like?
 ```{r}
 library(ggplot2)
 
-ggplot(temps, aes(x = date, y = avg, linetype = city)) +
-	geom_line()
+ggplot(temps) +
+	geom_line(aes(x = date, y = avg, linetype = city))
 ```
 
 We see much higher variability in temperatures in New York compared with San Francisco. This makes sense — New York is in the Northeastern US and experiences hot, humid summers and cold, occassionally snowy winters. San Francisco is on the West Coast and its Mediterranean climate means its temperature does not change much season to season.
@@ -47,24 +47,33 @@ Before we proceed further, let's clean up the plot a bit and assign it to a vari
 fahrenheit <- function(x, ...) format(paste(x, "°F"), ...)
 
 p <- ggplot() +
-  geom_line(data = temps, aes(x = date, y = avg, linetype = city)) +
+  geom_line(
+    aes(x = date, y = avg, linetype = city)
+    data = temps
+  ) +
   scale_x_date(date_breaks = "1 month", date_labels = "%b") +
-  scale_y_continuous(breaks = seq(20, 90, by = 10), labels = fahrenheit) +
+  scale_y_continuous(breaks = seq(20, 90, by = 10), labels = fahrenheit, limits = c(18, 90)) +
   labs(
-    title = "Average Daily Temperatures of New York and San Francisco in 2021",
+    title = "Average Daily Temperatures in 2021",
     linetype = NULL,
     fill = NULL,
     y = NULL,
     x = NULL 
   ) +
   guides(fill = "none") +
-  theme_gray(base_size = 14) +
+  theme_minimal(base_size = 14) +
   theme(
+  	plot.title = element_text(size = 22, face = "bold"),
     plot.title.position = "plot",
-    legend.position = c(0.85, 0.125),
+  	legend.position = c(0.75, 1.035),
     legend.box = "horizontal",
+  	legend.direction = "horizontal",
     legend.key = element_blank(),
-    legend.background = element_blank(),
+  	legend.key.size = unit(2, "line"),
+  	legend.text = element_text(size = 17, margin = margin(r = 1, unit = "line")),
+  	legend.background = element_blank(),
+    panel.grid.major.x = element_line(size = 0.4),
+    panel.grid.major.y = element_line(size = 0.4),
     panel.grid.minor.x = element_blank(),
     panel.grid.minor.y = element_blank()
   )
@@ -87,7 +96,6 @@ library(dplyr)
 library(tidyr)
 
 temps_wide <- temps %>%
-  select(-min, -max) %>%
   pivot_wider(names_from = city, values_from = avg) %>%
   rename(ny = `New York`, sf = `San Francisco`)
 
@@ -99,23 +107,23 @@ Now we can add a new layer to `p` with `geom_ribbon()` using `temps_wide`.  Map 
 ```{r}
 p +
   geom_ribbon(
-    data = temps_wide,
     aes(x = date, ymin = ny, ymax = sf),
+    data = temps_wide,
     alpha = 0.3
   )
 ```
 
 Great! Using `geom_ribbon()` we've added a light grey ribbon that runs between the two lines.
 
-On second thought... what if we used two colors for the ribbon? We could have one color when New York is warmer than San Francisco and another color when New York is colder than San Francisco.
+On second thought... what if we used two colors for the ribbon? We could have one color when New York is hotter than San Francisco and another color when New York is colder than San Francisco.
 
 This shouldn't be hard to do. Map `sf > ny` to `fill` in `geom_ribbon()` and...
 
 ```{r}
 p +
   geom_ribbon(
-    data = temps_wide,
     aes(x = date, ymin = ny, ymax = sf, fill = sf > ny),
+    data = temps_wide,
     alpha = 0.7
   )
 ```
@@ -176,8 +184,8 @@ Simply replace `geom_ribbon()` with `geom_braid()`.
 ```{r}
 p +
   geom_braid(
-    data = temps_wide,
     aes(x = date, ymin = ny, ymax = sf, fill = sf > ny),
+    data = temps_wide,
     alpha = 0.7
   )
 ```
@@ -191,8 +199,8 @@ Notice the message from `geom_braid()` that it is using `method = 'line'`. Since
 ```{r}
 p +
   geom_ribbon(
-    data = temps_wide,
     aes(x = date, ymin = ny, ymax = sf, fill = sf > ny),
+    data = temps_wide,
     stat = "braid",
     method = "line",
     alpha = 0.7
@@ -208,13 +216,13 @@ hues <- scales::hue_pal()(2)  # ggplot2 default color palette
 
 p +
   geom_braid(
-    data = temps_wide,
     aes(x = date, ymin = ny, ymax = sf, fill = sf > ny),
+    data = temps_wide,
     method = "line",
     alpha = 0.7
   ) +
-  annotate("text", x = as.Date("2021-01-01"), y = 86, label = "New York is warmer than San Francisco", hjust = 0, color = hues[1]) +
-  annotate("text", x = as.Date("2021-03-01"), y = 25, label = "New York is colder than San Francisco", hjust = 0, color = hues[2])
+  annotate("text", x = as.Date("2021-04-01"), y = 87, size = 5, label = "New York is hotter than San Francisco", color = hues[1]) +
+  annotate("text", x = as.Date("2021-05-01"), y = 25, size = 5, label = "New York is colder than San Francisco", color = hues[2])
 ```
 
 ## More to Braid
