@@ -21,7 +21,7 @@ You can install the development version of ggbraid from GitHub with:
 devtools::install_github("nsgrantham/ggbraid")
 ```
 
-## Example
+## Usage
 
 ``` r
 library(ggplot2)
