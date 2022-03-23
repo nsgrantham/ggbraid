@@ -1,0 +1,11 @@
+pandoc: 2.7.3
+pkgdown: 2.0.2
+pkgdown_sha: ~
+articles:
+  hoops: hoops.html
+  temps: temps.html
+last_built: 2022-03-23T06:28Z
+urls:
+  reference: https://nsgrantham.github.io/ggbraid/reference
+  article: https://nsgrantham.github.io/ggbraid/articles
+
