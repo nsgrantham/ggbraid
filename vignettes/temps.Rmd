@@ -1,27 +1,31 @@
 ---
-title: "Average Daily Temperatures of New York and San Francisco in 2021"
+title: "Average Daily Temperatures"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{temps}
+  %\VignetteIndexEntry{Average Daily Temperatures}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r set-chunk-opts, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  out.width = "100%"
 )
 ```
 
 Let's compare the temperatures of two cities in the United States: New York, New York and San Francisco, California.
 
-## Data from the National Weather Service
+## Getting Started
 
 `ggbraid` provides a data frame called `temps`, with daily average temperatures of New York and San Francisco in 2021 as recorded by the US National Weather Service (NWS) at [weather.gov](https://weather.gov).^[It is difficult to pull data from the NWS. It does not provide the data via an API and the data it returns through its point-and-click interface isn't in plain text format! To make matters worse, you can only retrieve data from a city one month at a time. For San Francisco, visit [weather.gov/wrh/climate?wfo=mtr](https://www.weather.gov/wrh/climate?wfo=mtr) and choose "San Francisco City, CA", "Daily data for a month", and a month from 2021; for New York, visit [weather.gov/wrh/climate?wfo=okx](https://www.weather.gov/wrh/climate?wfo=okx) and choose "NY-Central Park Area", "Daily data for a month", and a month from 2021. Copy and paste the data into spreadsheet software for further processing.]  
 
-```{r temps}
+```{r temps, message=FALSE}
+library(ggplot2)
 library(ggbraid)
+library(dplyr)
+library(tidyr)
 
 data(temps)
 
@@ -32,9 +36,7 @@ temps
 
 What do the daily average temperatures look like?
 
-```{r}
-library(ggplot2)
-
+```{r temps-plot}
 ggplot(temps) +
 	geom_line(aes(x = date, y = avg, linetype = city))
 ```
@@ -43,35 +45,30 @@ We see much higher variability in temperatures in New York compared with San Fra
 
 Before we proceed further, let's clean up the plot a bit and assign it to a variable `p` so we can reuse it throughout this vignette.
 
-```{r}
-fahrenheit <- function(x, ...) format(paste(x, "°F"), ...)
-
+```{r temps-plot-polished}
 p <- ggplot() +
-  geom_line(
-    aes(x = date, y = avg, linetype = city)
-    data = temps
-  ) +
+  geom_line(aes(x = date, y = avg, linetype = city), data = temps) +
   scale_x_date(date_breaks = "1 month", date_labels = "%b") +
-  scale_y_continuous(breaks = seq(20, 90, by = 10), labels = fahrenheit, limits = c(18, 90)) +
+  scale_y_continuous(
+    breaks = seq(20, 90, by = 10),
+    labels = function(x, ...) format(paste(x, "°F"), ...),
+    limits = c(18, 90)
+  ) +
+  guides(fill = "none") +
   labs(
     title = "Average Daily Temperatures in 2021",
     linetype = NULL,
-    fill = NULL,
     y = NULL,
     x = NULL 
   ) +
-  guides(fill = "none") +
   theme_minimal(base_size = 14) +
   theme(
-  	plot.title = element_text(size = 22, face = "bold"),
+  	plot.title = element_text(size = 16),
     plot.title.position = "plot",
-  	legend.position = c(0.75, 1.035),
-    legend.box = "horizontal",
+  	legend.position = c(0.75, 1.06),
   	legend.direction = "horizontal",
-    legend.key = element_blank(),
   	legend.key.size = unit(2, "line"),
-  	legend.text = element_text(size = 17, margin = margin(r = 1, unit = "line")),
-  	legend.background = element_blank(),
+  	legend.text = element_text(size = 12),
     panel.grid.major.x = element_line(size = 0.4),
     panel.grid.major.y = element_line(size = 0.4),
     panel.grid.minor.x = element_blank(),
@@ -91,10 +88,7 @@ Let's fill the area between the two lines. We can do so with `geom_ribbon()` fro
 
 In particular, we'll need to pivot `temps` wider by taking column names from `city` and values from `avg`. This is straightforward to do with `pivot_wider()` from the `tidyr` package. Call the new data frame `temps_wide`.
 
-```{r, message=FALSE}
-library(dplyr)
-library(tidyr)
-
+```{r temps-wide}
 temps_wide <- temps %>%
   pivot_wider(names_from = city, values_from = avg) %>%
   rename(ny = `New York`, sf = `San Francisco`)
@@ -104,7 +98,7 @@ temps_wide
 
 Now we can add a new layer to `p` with `geom_ribbon()` using `temps_wide`.  Map `date` to `x`, `ny` to `ymin`, and `sf` to `ymax`.^[Why not the other way around, with `sf` to `ymin` and `ny` to `ymax`? That's fine too because the lines alternate over/under one another.] Finally, add some transparency with `alpha = 0.3`.
 
-```{r}
+```{r geom-ribbon-without-fill}
 p +
   geom_ribbon(
     aes(x = date, ymin = ny, ymax = sf),
@@ -119,7 +113,7 @@ On second thought... what if we used two colors for the ribbon? We could have on
 
 This shouldn't be hard to do. Map `sf > ny` to `fill` in `geom_ribbon()` and...
 
-```{r}
+```{r geom-ribbon-with-fill}
 p +
   geom_ribbon(
     aes(x = date, ymin = ny, ymax = sf, fill = sf > ny),
@@ -167,7 +161,7 @@ So we must insert a new row in the data, yielding the following:
 
 We call this process _braiding_.
 
-**We must always braid the ribbon where the lines intersect.**
+**We need to braid the ribbon where the lines intersect.**
 
 The intersection described here is not the only type that requires braiding.
 
@@ -178,10 +172,9 @@ And there's a third, less common type of intersection that happens when both lin
 ## Braid with ggbraid
 
 The functions in `ggbraid` take care of all the braiding for you. 
-
 Simply replace `geom_ribbon()` with `geom_braid()`.
 
-```{r}
+```{r geom-braid-with-fill}
 p +
   geom_braid(
     aes(x = date, ymin = ny, ymax = sf, fill = sf > ny),
@@ -196,7 +189,7 @@ Notice the message from `geom_braid()` that it is using `method = 'line'`. Since
 
 `geom_braid()` isn't a new geometry. It takes the data provided, performs the necessary braiding operations on it, and passes the result to `geom_ribbon()` for drawing. If we'd like, we can still use `geom_ribbon()` and set `stat = 'braid'`.
 
-```{r}
+```{r geom-ribbon-stat-braid-with-fill}
 p +
   geom_ribbon(
     aes(x = date, ymin = ny, ymax = sf, fill = sf > ny),
@@ -221,11 +214,7 @@ p +
     method = "line",
     alpha = 0.7
   ) +
-  annotate("text", x = as.Date("2021-04-01"), y = 87, size = 5, label = "New York is hotter than San Francisco", color = hues[1]) +
-  annotate("text", x = as.Date("2021-05-01"), y = 25, size = 5, label = "New York is colder than San Francisco", color = hues[2])
+  annotate("text", x = as.Date("2021-09-10"), y = 84, size = 4, label = "NY hotter than SF", hjust = 0, color = hues[1]) +
+  annotate("text", x = as.Date("2021-02-20"), y = 23, size = 4, label = "NY colder than SF", hjust = 0, color = hues[2])
 ```
-
-## More to Braid
-
-`geom_braid()` also supports `method = 'step'` for use with `geom_step()` — read more at []()
 

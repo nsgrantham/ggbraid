@@ -1,30 +1,36 @@
 ---
-title: "Game 1 of the 2018 NBA Finals"
+title: "NBA Finals Game"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{hoops}
+  %\VignetteIndexEntry{NBA Finals Game}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r set-chunk-opts, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  out.width = "100%",
+  fig.height = 5
 )
 ```
 
-```{r setup}
+```{r hoops, message=FALSE}
+library(ggplot2)
 library(ggbraid)
+library(ggtext)  # element_markdown()
+library(dplyr)
+library(tidyr)
+library(glue)    # glue()
+library(hms)     # as_hms()
 
 data(hoops)
 
 hoops
 ```
 
-```{r, message=FALSE}
-library(dplyr)
-
+```{r hoops-score, message=FALSE}
 hoops_score <- hoops %>%
   group_by(team) %>%
   mutate(score = cumsum(points)) %>%
@@ -33,16 +39,12 @@ hoops_score <- hoops %>%
 hoops_score
 ```
 
-```{r}
-library(ggplot2)
-
+```{r hoops-score-plot}
 ggplot(hoops_score) +
   geom_step(aes(x = time, y = score, color = team))
 ```
 
-```{r}
-library(tidyr)
-
+```{r hoops-wide}
 hoops_wide <- hoops %>%
   group_by(time, team) %>%
   summarize(points = sum(points), .groups = "drop") %>%
@@ -58,26 +60,24 @@ hoops_wide <- hoops %>%
 hoops_wide
 ```
 
-```{r}
+```{r hoops-wide-plot}
 ggplot(hoops_wide) +
   geom_step(aes(x = time, y = diff)) +
   geom_hline(yintercept = 0)
 ```
 
-```{r}
-library(ggtext)  # element_markdown()
-library(glue)    # glue()
-library(hms)     # as_hms()
+```{r hoops-wide-plot-polished}
 
-gsw_color <- "#3263B2"
-cle_color <- "#662B3D"
+gsw_color <- "#006BB6"
+cle_color <- "#860038"
 
 p <- ggplot(hoops_wide) +
   geom_step(aes(x = time, y = diff)) +
   geom_hline(yintercept = 0) +
   scale_x_time(
     breaks = as_hms(c("00:00:00", "00:12:00", "00:24:00", "00:36:00", "00:48:00", "00:53:00")),
-    labels = c("00:00", "12:00", "24:00", "36:00", "48:00", "53:00")
+    labels = c("00:00", "12:00", "24:00", "36:00", "48:00", "53:00"),
+    expand = c(0.015, -0.015)
   ) +
   scale_y_continuous(
     breaks = seq(-12, 12, by = 1),
@@ -95,19 +95,19 @@ p <- ggplot(hoops_wide) +
   annotate("text", x = as_hms("00:42:00"), y = 11, label = "Q4", size = 6, color = "lightgrey") +
   annotate("text", x = as_hms("00:50:30"), y = 11, label = "OT1", size = 6, color = "lightgrey") +
   labs(
-    title = "Game 1 of the 2018 NBA Finals",
+    title = "2018 NBA Finals Game 1",
     subtitle = glue("<span style='color:{gsw_color};'>Golden State Warriors</span> vs. <span style='color:{cle_color}'>Cleveland Cavaliers</span>"),
     y = NULL,
     x = NULL
   ) +
   theme_minimal(base_size = 14) +
   theme(
-    plot.title = element_text(size = 22, face = "bold"),
+    plot.title = element_markdown(size = 18),
     plot.title.position = "plot",
-    plot.subtitle = element_markdown(size = 18, margin = margin(0, 0, 1, 0, unit = "line")),
+    plot.subtitle = element_markdown(size = 14, margin = margin(b = 1, unit = "line")),
     axis.text.y = element_markdown(),
     axis.text.x = element_text(color = "grey60"),
-    panel.grid.major.x = element_line(size = 1),
+    panel.grid.major.x = element_line(size = 0.5),
     panel.grid.major.y = element_line(size = 0.3),
     panel.grid.minor.x = element_blank(),
     panel.grid.minor.y = element_blank()
@@ -116,7 +116,7 @@ p <- ggplot(hoops_wide) +
 p
 ```
 
-```{r}
+```{r geom-ribbon-hoops}
 p +
   geom_ribbon(
     aes(x = time, ymin = diff, ymax = 0),
@@ -124,7 +124,7 @@ p +
   )
 ```
 
-```{r}
+```{r geom-braid-hoops-without-fill}
 p +
   geom_braid(
     aes(x = time, ymin = diff, ymax = 0),
@@ -133,7 +133,7 @@ p +
   )
 ```
 
-```{r}
+```{r geom-braid-hoops-with-fill}
 p +
   geom_braid(
     aes(x = time, ymin = diff, ymax = 0, fill = diff > 0),

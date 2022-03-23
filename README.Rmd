@@ -1,0 +1,78 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%",
+  dpi = 300
+)
+```
+
+# ggbraid
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+ggbraid provides a new stat, `stat_braid()`, that extends the functionality of `geom_ribbon()` to correctly fill the area between two alternating lines (or steps) with two different colors. ggbraid also provides a geom, `geom_braid()`, that wraps `geom_ribbon()` and uses `stat_braid()` by default.
+
+## Installation
+
+You can install the development version of ggbraid from GitHub with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("nsgrantham/ggbraid")
+```
+
+## Example
+
+```{r example}
+library(ggplot2)
+library(ggbraid)
+library(tidyr)
+
+set.seed(42)  # for reproducibility
+
+n <- 21
+
+df_long <- tibble(
+  x = c(1:n, 1:n),
+  y = c(rnorm(n), rnorm(n, mean = 0.5)),
+  z = c(rep("a", n), rep("b", n))
+)
+
+df_long
+```
+
+```{r pivot-wider}
+df_wide <- pivot_wider(df_long, names_from = z, values_from = y)
+
+df_wide
+```
+
+```{r geom-ribbon-without-fill}
+ggplot() +
+  geom_line(aes(x, y, linetype = z), data = df_long) +
+  geom_ribbon(aes(x, ymin = a, ymax = b), data = df_wide, alpha = 0.2) + 
+  guides(linetype = "none")
+```
+
+```{r geom-ribbon-with-fill}
+ggplot() +
+  geom_line(aes(x, y, linetype = z), data = df_long) +
+  geom_ribbon(aes(x, ymin = a, ymax = b, fill = a < b), data = df_wide, alpha = 0.6) +
+  guides(linetype = "none", fill = "none")
+```
+
+```{r geom-braid-with-fill}
+ggplot() +
+  geom_line(aes(x, y, linetype = z), data = df_long) +
+  geom_braid(aes(x, ymin = a, ymax = b, fill = a < b), data = df_wide, alpha = 0.6) +
+  guides(linetype = "none", fill = "none")
+```
