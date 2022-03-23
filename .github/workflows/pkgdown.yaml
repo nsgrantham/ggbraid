@@ -27,7 +27,12 @@ jobs:
         with:
           extra-packages: |
             pkgdown
+            ggplot2
+            dplyr
+            tidyr
             ggtext
+            glue
+            hms
           needs: website
 
       - name: Deploy package
