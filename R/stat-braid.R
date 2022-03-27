@@ -78,177 +78,188 @@ StatBraid <- ggproto("StatBraid", Stat,
 )
 
 compute_braided_lines <- function(data) {
-	lines <- data.frame(matrix(nrow = 0, ncol = ncol(data)))
-	colnames(lines) <- colnames(data)
-	n <- nrow(data)
-	for (i in 1:n) {
-		curr_row <- data[i, ]
-		lines <- rbind(lines, curr_row)
-
-		if (i == n) {
-			break
-		}
-
-		next_row <- data[i + 1, ]
-
-		if (curr_row$braid == next_row$braid) {
-			next
-		}
-
-		if (next_row$ymin == next_row$ymax) {  # explicit intersection
-			lines <- rbind(
-				lines,
-			  transform(next_row, braid = curr_row$braid, group = curr_row$group)
-			)
-			next
-		}
-
-		if (next_row$x > curr_row$x) {
-			# Consider the intersection of two lines:
-			# one defined by points (a, b) and (c, d), and another defined by points
-			# (e, f) and (g, h).
-		  #
-		  #              • (g, h)
-		  #             /
-		  #  (a, b)    /
-		  #        •--o--•
-		  #          /    (c, d)
-		  #         /
-		  #        • (e, f)
-		  #
-		  # If b > f and d < h, or if b < f and d > h, then the two lines intersect
-			# at a single point (x0, y0) defined by
-		  #   x0 = (u * (e - g) - v * (a - c)) / w
-		  # 	y0 = (u * (f - h) - v * (b - d)) / w
-		  # where
-		  #		u = a * d - b * c
-		  #   v = e * h - f * g
-		  #   w = (a - c) * (f - h) - (b - d) * (e - g)
-		  #
-		  # For more information on this formula, visit
-		  # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line
-
-			a <- curr_row$x
-			e <- curr_row$x
-			c <- next_row$x
-			g <- next_row$x
-			b <- curr_row$y1
-			f <- curr_row$y2
-			d <- next_row$y1
-			h <- next_row$y2
-
-			w <- (a - c) * (f - h) - (b - d) * (e - g)
-		 	u <- a * d - b * c
-		 	v <- e * h - f * g
-
-		 	x0 <- (u * (e - g) - v * (a - c)) / w
-		 	y0 <- (u * (f - h) - v * (b - d)) / w
-
-		 	lines <- rbind(
-		 		lines,
-		 		transform(curr_row, x = x0, ymin = y0, ymax = y0),
-		 		transform(next_row, x = x0, ymin = y0, ymax = y0)
-		 	)
-		 	next
-		}
-
-		if (next_row$x == curr_row$x) {
-			if (next_row$y1 == curr_row$y1) {
-				lines <- rbind(
-					lines,
-					transform(curr_row, ymin = y1, ymax = y1),
-					transform(next_row, ymin = y1, ymax = y1)
-				)
-			} else if (next_row$y2 == curr_row$y2) {
-				lines <- rbind(
-					lines,
-					transform(curr_row, ymin = y2, ymax = y2),
-					transform(next_row, ymin = y2, ymax = y2)
-				)
-			} else {
-				# Two overlapping vertical lines so there are infinite intersections.
-				# Define a single point to serve as a reasonable intersection.
-				y2_mid <- (next_row$y2 + curr_row$y2) / 2
-				y1_mid <- (next_row$y1 + curr_row$y1) / 2
-				y0_mid <- (y1_mid + y2_mid) / 2
-				lines <- rbind(
-					lines,
-					transform(curr_row, ymin = y0, ymax = y0),
-					transform(next_row, ymin = y0, ymax = y0)
-				)
-			}
-		}
-	}
-	lines
+	row_pairs <- lapply(1:nrow(data), function(i) data[i:(i+1), ])
+	do.call(rbind, lapply(row_pairs, braid_lines_row_pair))
 }
 
-compute_braid_steps <- function(data) {
-	steps <- data.frame(matrix(nrow = 0, ncol = ncol(data)))
-	colnames(steps) <- colnames(data)
-	n <- nrow(data)
-	for (i in 1:n) {
-		curr_row <- data[i, ]
-		steps <- rbind(steps, curr_row)
+braid_lines_row_pair <- function(row_pair) {
+	row1 <- row_pair[1, ]
+	row2 <- row_pair[2, ]
 
-		if (i == n) {
-			break
-		}
+	if (is.na(row2$braid)) {
+		return(row1)
+	}
 
-		next_row <- data[i + 1, ]
+	if (row1$braid == row2$braid) {
+		return(row1)
+	}
 
-		if (curr_row$braid == next_row$braid) {
-			steps <- rbind(
-				steps,
-				transform(curr_row, x = next_row$x)
+	if (row2$ymin == row2$ymax) {  # explicit intersection
+		return(
+			rbind(
+				row1,
+				transform(row2, braid = row1$braid, group = row1$group)
 			)
-			next
-		}
+		)
+	}
 
-		if (curr_row$ymin == curr_row$ymax) {
-			steps <- rbind(
-				steps,
-			  transform(curr_row, x = next_row$x),
-				transform(curr_row, x = next_row$x, braid = next_row$braid, group = next_row$group)
-			)
-			next
-		}
+	if (row1$x < row2$x) {
+		# Consider the intersection of two lines:
+		# one defined by points (a, b) and (c, d), and another defined by points
+		# (e, f) and (g, h).
+	  #
+	  #              • (g, h)
+	  #             /
+	  #  (a, b)    /
+	  #        •--o--•
+	  #          /    (c, d)
+	  #         /
+	  #        • (e, f)
+	  #
+	  # If b > f and d < h, or if b < f and d > h, then the two lines intersect
+		# at a single point (x0, y0) defined by
+	  #   x0 = (u * (e - g) - v * (a - c)) / w
+	  # 	y0 = (u * (f - h) - v * (b - d)) / w
+	  # where
+	  #		u = a * d - b * c
+	  #   v = e * h - f * g
+	  #   w = (a - c) * (f - h) - (b - d) * (e - g)
+	  #
+	  # For more information on this formula, visit
+	  # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line
 
-		if (next_row$ymin == next_row$ymax) {
-			steps <- rbind(
-				steps,
-			  transform(curr_row, x = next_row$x),
-				transform(next_row, braid = curr_row$braid, group = curr_row$group)
-			)
-			next
-		}
+		a <- row1$x
+		e <- row1$x
+		c <- row2$x
+		g <- row2$x
+		b <- row1$y1
+		f <- row1$y2
+		d <- row2$y1
+		h <- row2$y2
 
-		if (next_row$y1 == curr_row$y1) {
-			steps <- rbind(
-				steps,
-				transform(curr_row, x = next_row$x),
-				transform(curr_row, x = next_row$x, ymin = y1, ymax = y1),
-				transform(next_row, ymin = y1, ymax = y1)
+		w <- (a - c) * (f - h) - (b - d) * (e - g)
+	 	u <- a * d - b * c
+	 	v <- e * h - f * g
+
+	 	x0 <- (u * (e - g) - v * (a - c)) / w
+	 	y0 <- (u * (f - h) - v * (b - d)) / w
+
+	 	return(
+	 		rbind(
+	 			row1,
+	 			transform(row1, x = x0, ymin = y0, ymax = y0),
+	 			transform(row2, x = x0, ymin = y0, ymax = y0)
+	 		)
+		)
+	}
+
+	if (row1$x == row2$x) {
+		if (row1$y1 == row2$y1) {
+			return(
+				rbind(
+					row1,
+					transform(row1, ymin = y1, ymax = y1),
+					transform(row2, ymin = y1, ymax = y1)
+				)
 			)
-		} else if (next_row$y2 == curr_row$y2) {
-			steps <- rbind(
-				steps,
-				transform(curr_row, x = next_row$x),
-				transform(curr_row, x = next_row$x, ymin = y2, ymax = y2),
-				transform(next_row, ymin = y2, ymax = y2)
+		} else if (row1$y2 == row2$y2) {
+			return(
+				rbind(
+					row1,
+					transform(row1, ymin = y2, ymax = y2),
+					transform(row2, ymin = y2, ymax = y2)
+				)
 			)
 		} else {
 			# Two overlapping vertical lines so there are infinite intersections.
 			# Define a single point to serve as a reasonable intersection.
-			y2_mid <- (next_row$y2 + curr_row$y2) / 2
-			y1_mid <- (next_row$y1 + curr_row$y1) / 2
-			y0_mid <- (y1_mid + y2_mid) / 2
-			steps <- rbind(
-				steps,
-				transform(curr_row, x = next_row$x),
-				transform(curr_row, x = next_row$x, ymin = y0, ymax = y0),
-				transform(next_row, ymin = y0, ymax = y0)
+			y2_mid <- (row1$y2 + row2$y2) / 2
+			y1_mid <- (row1$y1 + row2$y1) / 2
+			y0 <- (y1_mid + y2_mid) / 2
+			return(
+				rbind(
+					row1,
+					transform(row1, ymin = y0, ymax = y0),
+					transform(row2, ymin = y0, ymax = y0)
+				)
 			)
 		}
 	}
-	steps
+}
+
+compute_braided_steps <- function(data) {
+	row_pairs <- lapply(1:nrow(data), function(i) data[i:(i+1), ])
+	do.call(rbind, lapply(row_pairs, braid_steps_row_pair))
+}
+
+braid_steps_row_pair <- function(row_pair) {
+	row1 <- row_pair[1, ]
+	row2 <- row_pair[2, ]
+
+	if (is.na(row2$braid)) {
+		return(row1)
+	}
+
+	if (row1$braid == row2$braid) {
+		return(
+			rbind(
+				row1,
+				transform(row1, x = row2$x)
+			)
+		)
+	}
+
+	if (row1$ymin == row1$ymax) {
+		return(
+			rbind(
+				row1,
+		  	transform(row1, x = row2$x),
+				transform(row1, x = row2$x, braid = row2$braid, group = row2$group)
+			)
+		)
+	}
+
+	if (row2$ymin == row2$ymax) {
+		return(
+			rbind(
+				row1,
+		  	transform(row1, x = row2$x),
+				transform(row2, braid = row1$braid, group = row1$group)
+			)
+		)
+	}
+
+	if (row1$y1 == row2$y1) {
+		return(
+			rbind(
+				row1,
+				transform(row1, x = row2$x),
+				transform(row1, x = row2$x, ymin = y1, ymax = y1),
+				transform(row2, ymin = y1, ymax = y1)
+			)
+		)
+	} else if (row1$y2 == row2$y2) {
+		return(
+			rbind(
+				row1,
+				transform(row1, x = row2$x),
+				transform(row1, x = row2$x, ymin = y2, ymax = y2),
+				transform(row2, ymin = y2, ymax = y2)
+			)
+		)
+	} else {
+		# Two overlapping vertical lines so there are infinite intersections.
+		# Define a single point to serve as a reasonable intersection.
+		y2_mid <- (row1$y2 + row1$y2) / 2
+		y1_mid <- (row1$y1 + row2$y1) / 2
+		y0 <- (y1_mid + y2_mid) / 2
+		return(
+			rbind(
+				row1,
+				transform(row1, x = row2$x),
+				transform(row1, x = row2$x, ymin = y0, ymax = y0),
+				transform(row2, ymin = y0, ymax = y0)
+			)
+		)
+	}
 }
