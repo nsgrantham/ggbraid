@@ -37,8 +37,6 @@ StatBraid <- ggproto("StatBraid", Stat,
 
 	required_aes = c("x", "ymin", "ymax"),
 
-	default_aes = aes(fill = after_stat(braid)),
-
 	setup_params = function(data, params) {
 		msg <- character()
 		if (is.null(params$method)) {
@@ -52,17 +50,23 @@ StatBraid <- ggproto("StatBraid", Stat,
 	},
 
 	compute_panel = function(data, scales, method = NULL) {
+		has_fill <- "fill" %in% colnames(data)
+
 		data <- with(data, data[order(x), ])
 
 		data <- transform(data,
-			braid = ymin < ymax,
+			braid = if (has_fill) fill else ymin < ymax,
 			y1 = ymin,
-			y2 = ymax,
-			ymin = pmin(ymin, ymax),
-			ymax = pmax(ymin, ymax)
+			y2 = ymax
 		)
 
-		data <- transform(data, group = as.integer(braid) + 1)
+		data <- transform(data,
+			group = if (has_fill) group else as.integer(braid) + 1,
+			ymin = pmin(y1, y2),
+			ymax = pmax(y1, y2)
+		)
+
+		data$fill <- NULL
 
 		if (identical(method, "line")) {
 			braided <- compute_braided_lines(data)
@@ -72,8 +76,11 @@ StatBraid <- ggproto("StatBraid", Stat,
 			braided <- compute_braided_steps(data)
 		}
 
-		drop_vars <- c("y1", "y2")
-		braided[, setdiff(colnames(braided), drop_vars)]
+		if (has_fill) {
+			braided <- transform(braided, fill = braid)
+		}
+
+		subset(braided, select = -c(y1, y2))
 	}
 )
 
