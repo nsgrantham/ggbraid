@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -27,7 +27,7 @@ knitr::knit_hooks$set(
 )
 ```
 
-```{r, echo = FALSE, comment = ""}
+```{r about-the-article, echo = FALSE, comment = ""}
 message("This article provides an example of using `geom_braid()` with a flipped set of aesthetics `y`, `xmin`, `xmax` instead of the usual `x`, `ymin`, `ymax`. This change is primarily motivated by the fact that we are visualizing judicial ideology scores, from strongly liberal to strongly conservative, and we are accustomed to interpreting ideologies on the left-right political spectrum.")
 ```
 
@@ -44,7 +44,7 @@ In this article, we'll work with a couple datasets that Martin and Quinn maintai
 
 We'll start with `court.csv`, which provides the Martin-Quinn score of a hypothetical "median justice" each year since 1937.
 
-```{r setup, message = FALSE}
+```{r load-packages-and-data, message = FALSE}
 library(ggplot2)
 library(ggbraid)
 library(readr)
@@ -64,7 +64,7 @@ court
 
 Let's plot the data in `court` by mapping `year` to `x`, `mqscore` to `y`, and applying the line geometry with `geom_line()`. Also, place a horizontal line at `yintercept = 0` with `geom_hline()` to better identify the point at which an ideology  
 
-```{r}
+```{r court-plot-up-down}
 ggplot(court, aes(x = year, y = mqscore)) +
   geom_line() +
   geom_hline(yintercept = 0)
@@ -78,7 +78,7 @@ In any case, let's give it a try.
 
 Starting with the previous code, switch `year` with `mqscore`, and replace `geom_hline()` with `geom_vline()` and `yintercept = 0` with `xintercept = 0`.
 
-```{r}
+```{r court-plot-left-right-wrong}
 ggplot(court, aes(x = mqscore, y = year)) +
   geom_line() +
   geom_vline(xintercept = 0)
@@ -90,7 +90,7 @@ The problem is that `geom_line()` connects observations in the order of the vari
 
 To avoid this ordering behavior, we can use `geom_path()` in place of `geom_line()`.
 
-```{r, fig.height = 12}
+```{r court-plot-left-right-correct, fig.height = 12}
 ggplot(court, aes(x = mqscore, y = year)) +
   geom_path() +
   geom_vline(xintercept = 0)
@@ -100,7 +100,7 @@ Much better.
 
 But this plot could really use some color. We can use `geom_braid()` to fill the area between the "median justice" Martin-Quinn score line and the x intercept at 0.
 
-```{r, fig.height = 12}
+```{r court-plot-geom-braid, fig.height = 12}
 ggplot(court, aes(x = mqscore, y = year)) +
   geom_path() +
   geom_vline(xintercept = 0) +
@@ -112,7 +112,7 @@ ggplot(court, aes(x = mqscore, y = year)) +
 
 Touching this up a bit, we can remove the vertical line at zero because it is no longer necessary, and we can remove the `fill` aesthetic legend because it doesn't add any value. While we're at it, let's change the colors and add some transparency.
 
-```{r, fig.height = 12}
+```{r court-plot-geom-braid-improved, fig.height = 12}
 ggplot(court, aes(x = mqscore, y = year)) +
   geom_path() +
   geom_braid(
@@ -130,7 +130,7 @@ Voila.
 
 Now it may also be valuable to include data from `justices.csv`, which provides the Martin-Quinn score of every justice each year since 1937.
 
-```{r}
+```{r load-justices-data}
 justices <- read_csv(
     "https://mqscores.lsa.umich.edu/media/2020/justices.csv",
     col_types = cols_only(
@@ -147,7 +147,7 @@ justices
 
 Let's add individual Martin-Quinn score lines for every justice.
 
-```{r, fig.height = 12}
+```{r justices-plot-not-rescaled, fig.height = 12}
 ggplot(court, aes(x = mqscore, y = year)) +
   geom_path() +
   geom_braid(
@@ -164,9 +164,9 @@ Wow.
 
 It should come as no surprise that individual justices hold much stronger ideologies than the hypothetical "median justice". But I did not expect the spread to be quite so wide.
 
-Now, the goal of this plot is not to communicate exact Martin-Quinn score values, but rather to convey the ideological lean of the court and its justices relative to one another. So let's apply a function to pull the largest values closer to zero. We'll call this function `moderate()` because it reduces the extreme liberal and conservative ideology scores. And because we've altered the scores, let's remove the x axis ticks and text.
+Now, the goal of this plot is not to communicate exact Martin-Quinn score values, but rather to convey the ideological lean of the court and its justices relative to one another. So let's apply a function to pull the largest values closer to zero and push the smaller values under one slightly away from zero. We'll call this function `moderate()` because it primarily reduces the extreme liberal and conservative ideology scores. And because we've altered the scores, let's remove the x axis ticks and text.
 
-```{r, fig.height = 12}
+```{r justices-plot-rescaled, fig.height = 12}
 moderate <- function(x) sign(x) * sqrt(abs(x))
 
 ggplot(court, aes(x = moderate(mqscore), y = year)) +
@@ -192,7 +192,7 @@ This is looking better.
 
 Let's select a handful of justices to highlight.
 
-```{r, fig.height = 12}
+```{r make-selected-justices, fig.height = 12}
 selected_justice_names <- c(
   "RBGinsburg" = "Ginsburg",
   "HABlackmun" = "Blackmun",
@@ -212,7 +212,7 @@ selected_justices <- justices %>%
 selected_justices
 ```
 
-```{r}
+```{r make-selected-justices-text}
 selected_justices_text <- selected_justices %>%
   group_by(name) %>%
   summarize(year = first(year), mqscore = first(mqscore), .groups = "drop") 
@@ -220,7 +220,9 @@ selected_justices_text <- selected_justices %>%
 selected_justices_text
 ```
 
-```{r, fig.height = 12}
+Now add two new geom layers: `geom_path()` using `selected_justices` and `geom_text()` using `selected_justices_text`.
+
+```{r plot-with-selected-justices, fig.height = 12}
 ggplot(court, aes(x = moderate(mqscore), y = year)) +
   geom_path() +
   geom_braid(
@@ -246,7 +248,7 @@ ggplot(court, aes(x = moderate(mqscore), y = year)) +
 
 Let's put some finishing touches on the plot.
 
-```{r, fig.height = 12}
+```{r final-plot, fig.height = 12}
 decades <- data.frame(year = seq(1940, 2020, by = 10))
 
 ggplot(court, aes(x = moderate(mqscore), y = year)) +
@@ -263,12 +265,12 @@ ggplot(court, aes(x = moderate(mqscore), y = year)) +
   annotate("rect", xmin = -Inf, xmax = 0, ymin = -Inf, ymax = Inf, fill = "blue", alpha = 0.06) +
   annotate("rect", xmin = 0, xmax = Inf, ymin = -Inf, ymax = Inf, fill = "red", alpha = 0.05) +
   annotate("text", x = 0, y = 2032, label = "Ideological Leaning of the US Supreme Court", fontface = "bold", size = 8) +
-  annotate("text", x = 0, y = 2029, label = "Martin-Quinn scores of every justice serving since 1937", size = 5) +
-  annotate("text", x = 0.95, y = 1937.5, label = "Data from mqscores.lsa.umich.edu", size = 4, hjust = 0) +
+  annotate("text", x = 0, y = 2029, label = "Adjusted Martin-Quinn scores of every justice serving since 1937", size = 5) +
+  annotate("text", x = 2.85, y = 1938.5, label = "Data from mqscores.lsa.umich.edu\nGraphic from nsgrantham.github.io/ggbraid/articles/court", size = 3, hjust = 1) +
   annotate("text", x = -0.5, y = 2025, label = "← More Liberal", hjust = 1, color = "blue", size = 5, alpha = 0.6) +
   annotate("text", x = 0.5, y = 2025, label = "More Conservative →", hjust = 0, color = "red", size = 5, alpha = 0.6) +
-  annotate("text", x = 0.75, y = 2021, label = "Court Median", fontface = "bold", size = 4) +
-  scale_x_continuous(limits = c(-2.85, 2.85)) +
+  annotate("text", x = 0.75, y = 2021.1, label = "Court Median", fontface = "bold", size = 4) +
+  scale_x_continuous(limits = c(-2.85, 2.85), expand = c(0.01, 0.01)) +
   scale_y_continuous(limits = c(NA, 2034.5), expand = c(0.01, 0.05)) +
   scale_fill_manual(values = c("red", "blue")) +
   guides(fill = "none") +
