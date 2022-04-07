@@ -35,9 +35,11 @@ stat_braid <- function(
 #' @export
 StatBraid <- ggproto("StatBraid", Stat,
 
-	required_aes = c("x", "ymin", "ymax"),
+	required_aes = c("x|y", "ymin|xmin", "ymax|xmax"),
 
 	setup_params = function(data, params) {
+		params$flipped_aes <- has_flipped_aes(data, params, range_is_orthogonal = TRUE)
+
 		msg <- character()
 		if (is.null(params$method)) {
 			params$method <- "line"
@@ -46,10 +48,14 @@ StatBraid <- ggproto("StatBraid", Stat,
 		if (length(msg) > 0) {
 			message("`geom_braid()` using ", msg)
 		}
+
 		params
 	},
 
-	compute_panel = function(data, scales, method = NULL) {
+	compute_panel = function(data, scales, method = NULL, flipped_aes = FALSE) {
+		data$flipped_aes <- flipped_aes
+		data <- flip_data(data, flipped_aes)
+
 		has_fill <- "fill" %in% colnames(data)
 
 		data <- with(data, data[order(x), ])
@@ -80,7 +86,8 @@ StatBraid <- ggproto("StatBraid", Stat,
 			braided <- transform(braided, fill = braid)
 		}
 
-		subset(braided, select = -c(y1, y2))
+		braided <- subset(braided, select = -c(y1, y2))
+		flip_data(braided, flipped_aes)
 	}
 )
 

@@ -46,7 +46,7 @@ geom_braid <- function(
 #' @usage NULL
 #' @export
 GeomBraid <- ggproto("GeomBraid", GeomRibbon,
-	required_aes = c("x", "ymin", "ymax"),
+	required_aes = c("x|y", "ymin|xmin", "ymax|xmax"),
 
 	setup_params = function(data, params) {
 		GeomRibbon$setup_params(data, params)
