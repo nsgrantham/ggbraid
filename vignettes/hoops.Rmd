@@ -14,7 +14,23 @@ knitr::opts_chunk$set(
   out.width = "100%",
   fig.height = 5
 )
+
+knitr::knit_hooks$set(
+  warning = function(x, options) {
+    paste(
+      '\n\n<div class="alert alert-info">',
+      gsub('##', '\n', gsub('Warning: ', '', x)),
+      '</div>',
+      sep = '\n'
+    )
+  }
+)
 ```
+
+```{r about-the-article, echo = FALSE, comment = ""}
+warning("This article demonstrates how to use `geom_braid()` with `method = 'step'` to fill the area between two alternating steps drawn with `geom_step()`.")
+```
+
 
 ```{r hoops, message=FALSE}
 library(ggplot2)

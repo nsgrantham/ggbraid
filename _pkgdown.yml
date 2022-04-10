@@ -1,4 +1,11 @@
 url: https://nsgrantham.github.io/ggbraid
 template:
   bootstrap: 5
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - temps
+  - hoops
+  - court
 
