@@ -16,10 +16,10 @@ knitr::opts_chunk$set(
 )
 
 knitr::knit_hooks$set(
-  message = function(x, options) {
+  warning = function(x, options) {
     paste(
       '\n\n<div class="alert alert-info">',
-      gsub('##', '\n', x),
+      gsub('##', '\n', gsub('Warning: ', '', x)),
       '</div>',
       sep = '\n'
     )
@@ -28,7 +28,7 @@ knitr::knit_hooks$set(
 ```
 
 ```{r about-the-article, echo = FALSE, comment = ""}
-message("This article provides an example of using `geom_braid()` with a flipped set of aesthetics `y`, `xmin`, `xmax` instead of the usual `x`, `ymin`, `ymax`. This change is primarily motivated by the fact that we are visualizing judicial ideology scores, from strongly liberal to strongly conservative, and we are accustomed to interpreting ideologies on the left-right political spectrum.")
+warning("This article provides an example of using `geom_braid()` with a flipped set of aesthetics `y`, `xmin`, `xmax` instead of the usual `x`, `ymin`, `ymax`. This change is primarily motivated by the fact that we are visualizing judicial ideology scores, from strongly liberal to strongly conservative, and we are accustomed to interpreting ideologies on the left-right political spectrum.")
 ```
 
 
