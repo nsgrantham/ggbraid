@@ -8,6 +8,7 @@ stat_braid <- function(
 	position = "identity",
 	...,
 	method = NULL,
+	na.impute = FALSE,
 	na.rm = FALSE,
 	show.legend = NA,
 	inherit.aes = TRUE
@@ -22,6 +23,7 @@ stat_braid <- function(
 		inherit.aes = inherit.aes,
 		params = list(
 			method = method,
+			na.impute = na.impute,
 			na.rm = na.rm,
 			...
 		)
@@ -52,7 +54,14 @@ StatBraid <- ggproto("StatBraid", Stat,
 		params
 	},
 
-	compute_panel = function(data, scales, method = NULL, flipped_aes = FALSE) {
+	setup_data = function(data, params) {
+		if (params$na.impute) {
+			data <- impute_na(data)
+		}
+		data
+	},
+
+	compute_panel = function(data, scales, method = NULL, flipped_aes = FALSE, na.impute = FALSE) {
 		data$flipped_aes <- flipped_aes
 		data <- flip_data(data, flipped_aes)
 
@@ -90,6 +99,56 @@ StatBraid <- ggproto("StatBraid", Stat,
 		flip_data(braided, flipped_aes)
 	}
 )
+
+impute_na <- function(data) {
+	has_fill <- "fill" %in% colnames(data)
+	if (has_fill) {
+		braid_fill_group <- unique(
+			subset(
+				transform(data, braid = ymin < ymax),
+				select = c(braid, fill, group)
+			)
+		)
+	}
+
+	n <- nrow(data)
+	for (i in 1:n) {
+		x_curr <- data$x[i]
+		x_prev <- data$x[i-1]
+
+		ymin_curr <- data$ymin[i]
+		if (is.na(ymin_curr)) {
+			i_next <- which(!is.na(data$ymin[i:n]))[1] + i - 1
+			x_next <- data$x[i_next]
+			ymin_next <- data$ymin[i_next]
+			ymin_prev <- data$ymin[i-1]
+			r <- if (x_next > x_prev) (x_curr - x_prev) / (x_next - x_prev) else 0
+			data[i, "ymin"] <- ymin_prev + r * (ymin_next - ymin_prev)
+		}
+
+		ymax_curr <- data$ymax[i]
+		if (is.na(ymax_curr)) {
+			i_next <- which(!is.na(data$ymax[i:n]))[1] + i - 1
+			x_next <- data$x[i_next]
+			ymax_next <- data$ymax[i_next]
+			ymax_prev <- data$ymax[i-1]
+			r <- if (x_next > x_prev) (x_curr - x_prev) / (x_next - x_prev) else 0
+			data[i, "ymax"] <- ymax_prev + r * (ymax_next - ymax_prev)
+		}
+	}
+
+	if (has_fill) {
+		rows <- rownames(data)
+		data <- transform(data, row_id = 1:nrow(data), braid = ymin < ymax)
+		data <- subset(data, select = -c(fill, group))
+		data <- merge(data, braid_fill_group, by = "braid", sort = FALSE)
+		data <- with(data, data[order(row_id), ])
+		rownames(data) <- rows
+		data <- subset(data, select = -c(row_id, braid))
+	}
+
+	data
+}
 
 compute_braided_lines <- function(data) {
 	row_pairs <- lapply(1:nrow(data), function(i) data[i:(i+1), ])
