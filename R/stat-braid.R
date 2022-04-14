@@ -55,9 +55,45 @@ StatBraid <- ggproto("StatBraid", Stat,
 	},
 
 	setup_data = function(data, params) {
-		if (params$na.impute) {
-			data <- impute_na(data)
+		data <- with(data, data[order(x), ])
+
+		has_fill <- "fill" %in% colnames(data)
+
+		data <- transform(data,
+			braid = if (has_fill) fill else ymin < ymax
+		)
+
+		data <- transform(data,
+			group = if (has_fill) group else as.integer(braid) + 1
+		)
+
+		if (params$na.rm) {
+			data <- data[complete.cases(data[, c("x", "ymin", "ymax")]), ]
 		}
+		if (params$na.impute) {
+			data <- impute_na(data, method = params$method)
+		}
+		n <- nrow(data)
+		for (i in 1:n) {
+			ymin <- data$ymin[i]
+			ymax <- data$ymax[i]
+			if (identical(params$method, "step") && is.na(ymin)) {
+				data[i, "ymin"] <- data$ymin[i-1]
+			}
+			if (identical(params$method, "step") && is.na(ymax)) {
+				data[i, "ymax"] <- data$ymax[i-1]
+			}
+			braid <- data$braid[i]
+			if (identical(params$method, "step") && is.na(braid)) {
+				data[i, "braid"] <- data$braid[i-1]
+				data[i, "group"] <- data$group[i-1]
+			}
+			if (is.na(ymin) || is.na(ymax)) {
+				data[(i+1):n, "group"] <- data[(i+1):n, "group"] + 2
+			}
+		}
+		data <- data[complete.cases(data[, c("x", "ymin", "ymax")]), ]
+
 		data
 	},
 
@@ -67,16 +103,12 @@ StatBraid <- ggproto("StatBraid", Stat,
 
 		has_fill <- "fill" %in% colnames(data)
 
-		data <- with(data, data[order(x), ])
-
 		data <- transform(data,
-			braid = if (has_fill) fill else ymin < ymax,
 			y1 = ymin,
 			y2 = ymax
 		)
 
 		data <- transform(data,
-			group = if (has_fill) group else as.integer(braid) + 1,
 			ymin = pmin(y1, y2),
 			ymax = pmax(y1, y2)
 		)
@@ -100,12 +132,12 @@ StatBraid <- ggproto("StatBraid", Stat,
 	}
 )
 
-impute_na <- function(data) {
+impute_na <- function(data, method) {
 	has_fill <- "fill" %in% colnames(data)
 	if (has_fill) {
 		braid_fill_group <- unique(
 			subset(
-				transform(data, braid = ymin < ymax),
+				data,
 				select = c(braid, fill, group)
 			)
 		)
@@ -122,8 +154,13 @@ impute_na <- function(data) {
 			x_next <- data$x[i_next]
 			ymin_next <- data$ymin[i_next]
 			ymin_prev <- data$ymin[i-1]
-			r <- if (x_next > x_prev) (x_curr - x_prev) / (x_next - x_prev) else 0
-			data[i, "ymin"] <- ymin_prev + r * (ymin_next - ymin_prev)
+			if (identical(method, "line")) {
+				r <- if (x_next > x_prev) (x_curr - x_prev) / (x_next - x_prev) else 0
+				data[i, "ymin"] <- ymin_prev + r * (ymin_next - ymin_prev)
+			}
+			if (identical(method, "step")) {
+				data[i, "ymin"] <- ymin_prev
+			}
 		}
 
 		ymax_curr <- data$ymax[i]
@@ -132,8 +169,13 @@ impute_na <- function(data) {
 			x_next <- data$x[i_next]
 			ymax_next <- data$ymax[i_next]
 			ymax_prev <- data$ymax[i-1]
-			r <- if (x_next > x_prev) (x_curr - x_prev) / (x_next - x_prev) else 0
-			data[i, "ymax"] <- ymax_prev + r * (ymax_next - ymax_prev)
+			if (identical(method, "line")) {
+				r <- if (x_next > x_prev) (x_curr - x_prev) / (x_next - x_prev) else 0
+				data[i, "ymax"] <- ymax_prev + r * (ymax_next - ymax_prev)
+			}
+			if (identical(method, "step")) {
+				data[i, "ymax"] <- ymax_prev
+			}
 		}
 	}
 
@@ -144,7 +186,7 @@ impute_na <- function(data) {
 		data <- merge(data, braid_fill_group, by = "braid", sort = FALSE)
 		data <- with(data, data[order(row_id), ])
 		rownames(data) <- rows
-		data <- subset(data, select = -c(row_id, braid))
+		data <- subset(data, select = -row_id)
 	}
 
 	data
@@ -277,7 +319,7 @@ braid_steps_row_pair <- function(row_pair) {
 		return(
 			rbind(
 				row1,
-				transform(row1, x = row2$x)
+				transform(row1, x = row2$x, group = row2$group) ### <--- changed here
 			)
 		)
 	}
