@@ -216,7 +216,7 @@ p +
 
 This is the same plot as before. We've also silenced the message by including `method = 'line'`.
 
-Finally, it may be helpful to label the ribbon colors so it's clear what they represent. This can happen in a legend (which I've turned off with the `guides(fill = "none")` layer in `p`). Another possibility is to provide text annotations on the plot.
+Finally, it may be helpful to label the ribbon colors so it's clear what they represent. This can happen in a legend (which we've turned off with the `guides(fill = "none")` layer in `p`). Another possibility is to provide text annotations on the plot.
 
 ```{r geom-braid-with-fill-and-labels}
 hues <- scales::hue_pal()(2)  # ggplot2 default color palette
