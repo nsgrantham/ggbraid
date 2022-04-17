@@ -40,7 +40,7 @@ set.seed(42)  # for reproducibility
 n <- 21
 
 df_long <- tibble(
-  x = c(1:n, 1:n + 2.5),
+  x = c(1:n, 1:n),
   y = c(rnorm(n), rnorm(n, mean = 0.5)),
   z = c(rep("a", n), rep("b", n))
 )
@@ -59,7 +59,8 @@ df_wide
 p_line <- ggplot() +
   geom_line(aes(x = x, y = y, linetype = z), data = df_long) +
   geom_point(aes(x = x, y = y), data = df_long) +
-  guides(linetype = "none")
+  guides(linetype = "none", fill = "none") +
+  theme_minimal()
 
 p_line
 ```
@@ -68,7 +69,7 @@ p_line
 p_step <- ggplot(df_long) +
   geom_step(aes(x = x, y = y, linetype = z)) +
   geom_point(aes(x = x, y = y)) +
-  guides(linetype = "none") +
+  guides(linetype = "none", fill = "none") +
   theme_minimal()
 
 p_step
@@ -92,14 +93,44 @@ p_line +
   geom_braid(
     aes(x = x, ymin = a, ymax = b, fill = a < b),
     data = df_wide,
-    alpha = 0.3,
-    na.impute = TRUE
+    alpha = 0.3
   )
 ```
 
 ## Impute `NA`s between observations
 
 `na.impute = TRUE`
+
+```{r}
+p_line +
+  geom_ribbon(
+    aes(x = x, ymin = a, ymax = b),
+    data = df_wide,
+    alpha = 0.3
+  )
+```
+
+```{r}
+p_line +
+  geom_braid(
+    aes(x = x, ymin = a, ymax = b, fill = a < b),
+    data = df_wide,
+    alpha = 0.3,
+    method = "line",
+    na.impute = TRUE
+  )
+```
+
+```{r}
+p_step +
+  geom_braid(
+    aes(x = x, ymin = a, ymax = b, fill = a < b),
+    data = df_wide,
+    alpha = 0.3,
+    method = "step",
+    na.impute = TRUE
+  )
+```
 
 ## Remove `NA`s
 

@@ -120,34 +120,34 @@ impute_na <- function(data, method) {
 		ymin_curr <- data$ymin[i]
 		if (is.na(ymin_curr)) {
 			ymin_prev <- data$ymin[i-1]
-			if (identical(method, "line")) {
-				i_next <- which(!is.na(data$ymin[i:n]))[1] + i - 1
-				if (!is.na(i_next)) {
-					x_next <- data$x[i_next]
-					ymin_next <- data$ymin[i_next]
-					r <- if (x_next > x_prev) (x_curr - x_prev) / (x_next - x_prev) else 0
-					data[i, "ymin"] <- ymin_prev + r * (ymin_next - ymin_prev)
+			i_next <- which(!is.na(data$ymin[i:n]))[1] + i - 1
+			if (!is.na(i_next)) {
+				if (identical(method, "line")) {
+						x_next <- data$x[i_next]
+						ymin_next <- data$ymin[i_next]
+						r <- if (x_next > x_prev) (x_curr - x_prev) / (x_next - x_prev) else 0
+						data[i, "ymin"] <- ymin_prev + r * (ymin_next - ymin_prev)
 				}
-			}
-			if (identical(method, "step")) {
-				data[i, "ymin"] <- ymin_prev
+				if (identical(method, "step")) {
+					data[i, "ymin"] <- ymin_prev
+				}
 			}
 		}
 
 		ymax_curr <- data$ymax[i]
 		if (is.na(ymax_curr)) {
 			ymax_prev <- data$ymax[i-1]
-			if (identical(method, "line")) {
-				i_next <- which(!is.na(data$ymax[i:n]))[1] + i - 1
-				if (!is.na(i_next)) {
+			i_next <- which(!is.na(data$ymax[i:n]))[1] + i - 1
+			if (!is.na(i_next)) {
+				if (identical(method, "line")) {
 					x_next <- data$x[i_next]
 					ymax_next <- data$ymax[i_next]
 					r <- if (x_next > x_prev) (x_curr - x_prev) / (x_next - x_prev) else 0
 					data[i, "ymax"] <- ymax_prev + r * (ymax_next - ymax_prev)
 				}
-			}
-			if (identical(method, "step")) {
-				data[i, "ymax"] <- ymax_prev
+				if (identical(method, "step")) {
+					data[i, "ymax"] <- ymax_prev
+				}
 			}
 		}
 	}
@@ -245,6 +245,11 @@ remove_na <- function(data) {
 }
 
 compute_braided_lines <- function(data) {
+	splits <- cut(data$group, seq(0.5, max(data$group) + 1.5, by = 2))
+	do.call(rbind, lapply(split(data, splits), braid_lines))
+}
+
+braid_lines <- function(data) {
 	row_pairs <- lapply(1:nrow(data), function(i) data[i:(i+1), ])
 	do.call(rbind, lapply(row_pairs, braid_lines_row_pair))
 }
@@ -355,6 +360,11 @@ braid_lines_row_pair <- function(row_pair) {
 }
 
 compute_braided_steps <- function(data) {
+	splits <- cut(data$group, seq(0.5, max(data$group) + 1.5, by = 2))
+	do.call(rbind, lapply(split(data, splits), braid_steps))
+}
+
+braid_steps <- function (data) {
 	row_pairs <- lapply(1:nrow(data), function(i) data[i:(i+1), ])
 	do.call(rbind, lapply(row_pairs, braid_steps_row_pair))
 }
