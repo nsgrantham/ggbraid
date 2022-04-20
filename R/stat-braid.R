@@ -8,7 +8,7 @@ stat_braid <- function(
 	position = "identity",
 	...,
 	method = NULL,
-	na.impute = FALSE,
+	na.keep = FALSE,
 	na.rm = FALSE,
 	show.legend = NA,
 	inherit.aes = TRUE
@@ -23,7 +23,7 @@ stat_braid <- function(
 		inherit.aes = inherit.aes,
 		params = list(
 			method = method,
-			na.impute = na.impute,
+			na.keep = na.keep,
 			na.rm = na.rm,
 			...
 		)
@@ -51,8 +51,8 @@ StatBraid <- ggproto("StatBraid", Stat,
 			message("`geom_braid()` using ", msg)
 		}
 
-		if (is.null(params$na.impute)) {
-			params$na.impute <- FALSE
+		if (is.null(params$na.keep)) {
+			params$na.keep <- FALSE
 		}
 
 		params
@@ -66,28 +66,37 @@ StatBraid <- ggproto("StatBraid", Stat,
 		data <- with(data, data[!is.na(x), ])
 
 		has_fill <- "fill" %in% colnames(data)
-		data <- transform(data,
-			braid = if (has_fill) fill else ymin < ymax,
-			group = if (has_fill) group else as.integer(ymin < ymax) + 1
-		)
-		data$group[is.na(data$group)] <- 3
+
+		if (has_fill) {
+			data <- transform(data,
+				braid = as.logical(as.integer(as.factor(fill)) - 1)
+			)
+		} else {
+			data <- transform(data, braid = ymin < ymax)
+			data <- transform(data, group = as.integer(braid) + 1)
+		}
+		data$group[is.na(data$braid)] <- -1
 
 		if (params$na.rm) {
 			data <- remove_na(data)
-		} else if (params$na.impute) {
-			data <- impute_na(data, method = params$method)
-		} else {
+		} else if (params$na.keep) {
 			data <- handle_na_ribbon_default(data, method = params$method)
+		} else if (any(is.na(data[, c("ymin", "ymax")]))) {
+			data <- impute_na(data, method = params$method)
 		}
 
 		flip_data(data, params$flipped_aes)
 	},
 
-	compute_panel = function(data, scales, method = NULL, flipped_aes = FALSE, na.impute = FALSE) {
+	compute_panel = function(data, scales, method = NULL, flipped_aes = FALSE, na.keep = FALSE) {
 		data <- flip_data(data, flipped_aes)
 
 		has_fill <- "fill" %in% colnames(data)
-		data$fill <- NULL
+		if (has_fill) {
+			braid_map <- get_braid_map(data)
+			braid_map$group <- NULL
+			data$fill <- NULL
+		}
 
 		data <- transform(data, y1 = ymin, y2 = ymax)
 		data <- transform(data, ymin = pmin(y1, y2), ymax = pmax(y1, y2))
@@ -101,16 +110,39 @@ StatBraid <- ggproto("StatBraid", Stat,
 		}
 
 		if (has_fill) {
-			braided <- transform(braided, fill = braid)
+			braided <- transform(braided, row_id = 1:nrow(braided))
+			braided <- merge(
+				braided[, !(colnames(braided) %in% c("fill"))],
+				braid_map,
+				by = "braid",
+				all.x = TRUE,
+				sort = FALSE
+			)
+			braided <- with(braided, braided[order(row_id), ])
+			braided <- subset(braided, select = -row_id)
 		}
 
 		braided <- subset(braided, select = -c(y1, y2))
+		rownames(braided) <- NULL
+
 		flip_data(braided, flipped_aes)
 	}
 )
 
+get_braid_op <- function(data) {
+	braid_na.omit <- na.omit(data$braid)
+	braid_ops <- c(`<`, `<=`, `>`, `>=`)
+	for (braid_op in braid_ops) {
+		if (all(braid_na.omit == na.omit(braid_op(data$ymin, data$ymax)))) {
+			return(braid_op)
+		}
+	}
+	`<`
+}
+
 impute_na <- function(data, method) {
 	braid_map <- get_braid_map(data)
+	braid_op <- get_braid_op(data)
 
 	n <- nrow(data)
 	for (i in 2:n) {
@@ -123,10 +155,10 @@ impute_na <- function(data, method) {
 			i_next <- which(!is.na(data$ymin[i:n]))[1] + i - 1
 			if (!is.na(i_next)) {
 				if (identical(method, "line")) {
-						x_next <- data$x[i_next]
-						ymin_next <- data$ymin[i_next]
-						r <- if (x_next > x_prev) (x_curr - x_prev) / (x_next - x_prev) else 0
-						data[i, "ymin"] <- ymin_prev + r * (ymin_next - ymin_prev)
+					x_next <- data$x[i_next]
+					ymin_next <- data$ymin[i_next]
+					r <- if (x_next > x_prev) (x_curr - x_prev) / (x_next - x_prev) else 0
+					data[i, "ymin"] <- ymin_prev + r * (ymin_next - ymin_prev)
 				}
 				if (identical(method, "step")) {
 					data[i, "ymin"] <- ymin_prev
@@ -153,60 +185,34 @@ impute_na <- function(data, method) {
 	}
 
 	rows <- rownames(data)
-	data <- transform(data, row_id = 1:n, braid_id = as.integer(ymin < ymax))
-	data <- data[, !(colnames(data) %in% c("braid", "fill", "group"))]
-	data <- merge(data, braid_map, by = "braid_id", sort = FALSE)
+	data <- transform(data, row_id = 1:n, braid = braid_op(ymin, ymax))
+	data <- data[, !(colnames(data) %in% c("fill", "group"))]
+	data <- merge(data, braid_map, by = "braid", sort = FALSE)
 	data <- with(data, data[order(row_id), ])
+	data <- subset(data, select = -row_id)
 	rownames(data) <- rows
-	data <- subset(data, select = -c(row_id, braid_id))
 
 	remove_na(data)
 }
 
 get_braid_map <- function(data) {
-	braid_map <- transform(data, braid_id = as.integer(ymin < ymax))
-	braid_map <- unique(
-		braid_map[, colnames(braid_map) %in% c("braid_id", "braid", "fill", "group")]
+	braid_map <- merge(
+		data.frame(braid = c(TRUE, FALSE, NA), group = c(2, 1, -1)),
+		unique(data[, colnames(data) %in% c("braid", "fill"), drop = FALSE]),
+		by = "braid",
+		all.x = TRUE,
+		sort = FALSE
 	)
-
-	has_fill <- "fill" %in% colnames(braid_map)
-	if (!any(na.omit(braid_map$braid_id) == 0)) {
-		new_row <- data.frame(
-			braid_id = 0,
-			braid = FALSE,
-			fill = FALSE,
-			group = max(braid_map$group) + 1
-		)
-		if (!has_fill) new_row$fill <- NULL
-		braid_map <- rbind(braid_map, new_row)
+	if ("fill" %in% colnames(braid_map)) {
+		is_fill_missing <- with(braid_map, is.na(fill) && !is.na(braid))
+		braid_map[is_fill_missing, "fill"] <- braid_map[is_fill_missing, "braid"]
 	}
-	if (!any(na.omit(braid_map$braid_id) == 1)) {
-		new_row <- data.frame(
-			braid_id = 1,
-			braid = TRUE,
-			fill = TRUE,
-			group = max(braid_map$group) + 1
-		)
-		if (!has_fill) new_row$fill <- NULL
-		braid_map <- rbind(braid_map, new_row)
-	}
-	if (!any(is.na(braid_map$braid_id))) {
-		new_row <- data.frame(
-			braid_id = NA,
-			braid = NA,
-			fill = NA,
-			group = max(braid_map$group) + 1
-		)
-		if (!has_fill) new_row$fill <- NULL
-		braid_map <- rbind(braid_map, new_row)
-	}
-
 	braid_map
 }
 
 handle_na_ribbon_default <- function(data, method) {
 	n <- nrow(data)
-	is_prev_na <- FALSE
+	is_prev_na <- TRUE
 	na_group_id <- -1
 
 	for (i in 1:n) {
@@ -214,8 +220,12 @@ handle_na_ribbon_default <- function(data, method) {
 		ymax <- data$ymax[i]
 
 		if (identical(method, "step")) {
-			if (is.na(ymin)) data[i, "ymin"] <- data$ymin[i-1]
-			if (is.na(ymax)) data[i, "ymax"] <- data$ymax[i-1]
+			if (is.na(ymin)) {
+				data[i, "ymin"] <- if (i == 1) NA else data$ymin[i-1]
+			}
+			if (is.na(ymax)) {
+				data[i, "ymax"] <- if (i == 1) NA else data$ymax[i-1]
+			}
 		}
 
 		if (any(is.na(c(ymin, ymax))) && !is_prev_na) {
@@ -224,17 +234,15 @@ handle_na_ribbon_default <- function(data, method) {
 
 		braid <- data$braid[i]
 		if (is.na(braid)) {
-			data[i, "braid"] <- data$braid[i-1]
+			data[i, "braid"] <- if (i == 1) NA else data$braid[i-1]
 			if (is_prev_na || identical(method, "line")) {
 				data[i, "group"] <- na_group_id
 				na_group_id <- na_group_id - 1
 			} else {
 				data[i, "group"] <- data$group[i-1]
 			}
-			is_prev_na <- TRUE
-		} else {
-			is_prev_na <- FALSE
 		}
+		is_prev_na <- is.na(braid)
 	}
 
 	remove_na(data)
