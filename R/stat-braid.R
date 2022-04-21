@@ -80,7 +80,7 @@ StatBraid <- ggproto("StatBraid", Stat,
 		if (params$na.rm) {
 			data <- remove_na(data)
 		} else if (params$na.keep) {
-			data <- handle_na_ribbon_default(data, method = params$method)
+			data <- keep_na(data, method = params$method)
 		} else if (any(is.na(data[, c("ymin", "ymax")]))) {
 			data <- impute_na(data, method = params$method)
 		}
@@ -210,10 +210,9 @@ get_braid_map <- function(data) {
 	braid_map
 }
 
-handle_na_ribbon_default <- function(data, method) {
+keep_na <- function(data, method) {
 	n <- nrow(data)
 	is_prev_na <- TRUE
-	na_group_id <- -1
 
 	for (i in 1:n) {
 		ymin <- data$ymin[i]
@@ -236,8 +235,7 @@ handle_na_ribbon_default <- function(data, method) {
 		if (is.na(braid)) {
 			data[i, "braid"] <- if (i == 1) NA else data$braid[i-1]
 			if (is_prev_na || identical(method, "line")) {
-				data[i, "group"] <- na_group_id
-				na_group_id <- na_group_id - 1
+				data[i, "group"] <- -1
 			} else {
 				data[i, "group"] <- data$group[i-1]
 			}
