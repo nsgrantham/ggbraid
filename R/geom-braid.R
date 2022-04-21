@@ -15,6 +15,7 @@ geom_braid <- function(
 	position = "identity",
 	...,
 	method = NULL,
+	na.keep = FALSE,
 	na.rm = FALSE,
 	show.legend = NA,
 	inherit.aes = TRUE
@@ -27,6 +28,7 @@ geom_braid <- function(
 
 	if (identical(stat, "braid")) {
 		params$method <- method
+		params$na.keep <- na.keep
 	}
 
 	layer(
