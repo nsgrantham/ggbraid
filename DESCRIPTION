@@ -1,7 +1,7 @@
 Package: ggbraid
 Type: Package
 Title: Braid Ribbons in ggplot2
-Version: 0.1.0
+Version: 0.2.0
 Author: Neal Grantham <neal@nsgrantham.com>
 Maintainer: Neal Grantham <neal@nsgrantham.com>
 Description: ggbraid provides a new stat, `stat_braid()`, that extends the 
