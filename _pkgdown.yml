@@ -1,6 +1,12 @@
 url: https://nsgrantham.github.io/ggbraid
+
+authors:
+  Neal Grantham:
+    href: https://nsgrantham.com
+
 template:
   bootstrap: 5
+
 articles:
 - title: Articles
   navbar: ~

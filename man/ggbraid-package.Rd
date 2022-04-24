@@ -4,8 +4,15 @@
 \name{ggbraid-package}
 \alias{ggbraid}
 \alias{ggbraid-package}
-\title{ggbraid: Fill the area between two alternating lines with `geom_braid()`}
+\title{ggbraid: Braid two lines and a ribbon in ggplot2}
 \description{
-It is difficult to properly fill the area between two lines in `ggplot2`. Use of `geom_ribbon()` is encouraged, but it does not always work as expected due to a potentional mismatch between the data and how `geom_ribbon()` requires the data to be arranged. This package introduces `geom_braid()`, a substitute for `geom_ribbon()` that takes care of these details before applying `geom_ribbon()`, resulting in a correctly filled area between two alternating lines.
+ggbraid provides a new stat, `stat_braid()`, that extends the functionality of `geom_ribbon()` to correctly fill the area between two alternating lines (or steps) with two different colors. ggbraid also provides a geom, `geom_braid()`, that wraps `geom_ribbon()` and uses `stat_braid()` by default.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/nsgrantham/ggbraid}
+}
+
 }
 \keyword{internal}
