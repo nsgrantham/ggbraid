@@ -4,13 +4,14 @@
 \name{ggbraid-package}
 \alias{ggbraid}
 \alias{ggbraid-package}
-\title{ggbraid: Braid two lines and a ribbon in ggplot2}
+\title{ggbraid: Braid Ribbons in ggplot2}
 \description{
 ggbraid provides a new stat, `stat_braid()`, that extends the functionality of `geom_ribbon()` to correctly fill the area between two alternating lines (or steps) with two different colors. ggbraid also provides a geom, `geom_braid()`, that wraps `geom_ribbon()` and uses `stat_braid()` by default.
 }
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://nsgrantham.github.io/ggbraid}
   \item \url{https://github.com/nsgrantham/ggbraid}
 }
 
