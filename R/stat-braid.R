@@ -8,8 +8,7 @@ stat_braid <- function(
 	position = "identity",
 	...,
 	method = NULL,
-	na.keep = FALSE,
-	na.rm = FALSE,
+	na.rm = NA,
 	show.legend = NA,
 	inherit.aes = TRUE
 ) {
@@ -23,7 +22,6 @@ stat_braid <- function(
 		inherit.aes = inherit.aes,
 		params = list(
 			method = method,
-			na.keep = na.keep,
 			na.rm = na.rm,
 			...
 		)
@@ -51,10 +49,6 @@ StatBraid <- ggproto("StatBraid", Stat,
 			message("`geom_braid()` using ", msg)
 		}
 
-		if (is.null(params$na.keep)) {
-			params$na.keep <- FALSE
-		}
-
 		params
 	},
 
@@ -77,18 +71,20 @@ StatBraid <- ggproto("StatBraid", Stat,
 		}
 		data$group[is.na(data$braid)] <- -1
 
-		if (params$na.rm) {
-			data <- remove_na(data)
-		} else if (params$na.keep) {
-			data <- keep_na(data, method = params$method)
-		} else if (any(is.na(data[, c("ymin", "ymax")]))) {
-			data <- impute_na(data, method = params$method)
+		if (any(is.na(data[, c("ymin", "ymax")]))) {
+			if (is.na(params$na.rm)) {
+				data <- impute_na(data, method = params$method)
+			} else if (params$na.rm) {
+				data <- remove_na(data)
+			} else {
+				data <- keep_na(data, method = params$method)
+			}
 		}
 
 		flip_data(data, params$flipped_aes)
 	},
 
-	compute_panel = function(data, scales, method = NULL, flipped_aes = FALSE, na.keep = FALSE) {
+	compute_panel = function(data, scales, method = NULL, flipped_aes = FALSE) {
 		data <- flip_data(data, flipped_aes)
 
 		has_fill <- "fill" %in% colnames(data)
@@ -247,7 +243,7 @@ keep_na <- function(data, method) {
 }
 
 remove_na <- function(data) {
-	data[complete.cases(data[, c("ymin", "ymax")]), ]
+	data[stats::complete.cases(data[, c("ymin", "ymax")]), ]
 }
 
 compute_braided_lines <- function(data) {
@@ -387,7 +383,7 @@ braid_steps_row_pair <- function(row_pair) {
 		return(
 			rbind(
 				row1,
-				transform(row1, x = row2$x, group = row2$group) ### <--- changed here
+				transform(row1, x = row2$x, group = row2$group)
 			)
 		)
 	}
