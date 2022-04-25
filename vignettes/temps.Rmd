@@ -13,7 +13,23 @@ knitr::opts_chunk$set(
   comment = "#>",
   out.width = "100%"
 )
+
+knitr::knit_hooks$set(
+  warning = function(x, options) {
+    paste(
+      '\n\n<div class="alert alert-info">',
+      gsub('##', '\n', gsub('Warning: ', '', x)),
+      '</div>',
+      sep = '\n'
+    )
+  }
+)
 ```
+
+```{r about-the-article, echo = FALSE, comment = ""}
+warning("This article presents the \"Unbraided Ribbon Problem\" in which `geom_ribbon()` incorrectly fills the area between two alternating lines with two different colors. To fix the problem, we use `geom_braid()` from `ggbraid` with `method = 'line'`.")
+```
+
 
 Let's compare the temperatures of two cities in the United States: New York, New York and San Francisco, California.
 
@@ -43,7 +59,7 @@ ggplot(temps) +
 
 We see much higher variability in temperatures in New York compared with San Francisco. This makes sense — New York is in the Northeastern US and experiences hot, humid summers and cold, occassionally snowy winters. San Francisco is on the West Coast and its Mediterranean climate means its temperature does not change much season to season.
 
-Before we proceed further, let's clean up the plot a bit and assign it to a variable `p` so we can reuse it throughout this vignette.
+Before we proceed further, let's clean up the plot a bit and assign it to a variable `p` so we can reuse it throughout the article.
 
 ```{r temps-plot-polished}
 p <- ggplot() +
@@ -86,7 +102,7 @@ Let's fill the area between the two lines. We can do so with `geom_ribbon()` fro
 
 `geom_ribbon()` requires three aesthetics: `x`, `ymin`, and `ymax`. We can map `date` to `x` as we did in `geom_line()`. However, we'll need to transform `temps` to create new variables that we can map to `ymin` and `ymax`.
 
-In particular, we'll need to pivot `temps` wider by taking column names from `city` and values from `avg`. This is straightforward to do with `pivot_wider()` from the `tidyr` package. Call the new data frame `temps_wide`.
+We can pivot `temps` with `pivot_wider()` from the `tidyr` package, taking column names from `city` and values from `avg`. Call the new data frame `temps_wide`.
 
 ```{r temps-wide}
 temps_wide <- temps %>%
@@ -163,13 +179,11 @@ We call this process _braiding_.
 
 **We need to braid the ribbon where the lines intersect.**
 
-The intersection described here is not the only type that requires braiding.
+And the intersection described here is not the only type that requires braiding.
 
-There are also many instances where the two lines intersect _between_ two rows in the data. In these cases, we must use a mathematical formula to determine the exact point at which the lines intersect and braid the ribbon accordingly.
+There are instances where the two lines intersect _between_ two rows in the data. In these cases, we must use a mathematical formula to determine the exact point at which the lines intersect and braid the ribbon accordingly. There are also instances where both lines are vertical at the same `x`, an uncommon situation but one that produces an infinite number of intersection points and requires braiding to fix.
 
-And there's a third, less common type of intersection that happens when both lines are vertical at the same `x` and therefore intersect at an infinite number of points. 
-
-## Braid with ggbraid
+## Braiding with ggbraid
 
 The functions in `ggbraid` take care of all the braiding for you. 
 Simply replace `geom_ribbon()` with `geom_braid()`.
@@ -202,9 +216,9 @@ p +
 
 This is the same plot as before. We've also silenced the message by including `method = 'line'`.
 
-Finally, it may be helpful to label the ribbon colors so it's clear what they represent. This can happen in a legend (which I've turned off with the `guides(fill = "none")` layer in `p`). Another possibility is to provide text annotations on the plot.
+Finally, it may be helpful to label the ribbon colors so it's clear what they represent. This can happen in a legend (which we've turned off with the `guides(fill = "none")` layer in `p`). Another possibility is to provide text annotations on the plot.
 
-```{r}
+```{r geom-braid-with-fill-and-labels}
 hues <- scales::hue_pal()(2)  # ggplot2 default color palette
 
 p +

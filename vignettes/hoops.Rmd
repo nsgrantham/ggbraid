@@ -14,7 +14,29 @@ knitr::opts_chunk$set(
   out.width = "100%",
   fig.height = 5
 )
+
+knitr::knit_hooks$set(
+  warning = function(x, options) {
+    paste(
+      '\n\n<div class="alert alert-info">',
+      gsub('##', '\n', gsub('Warning: ', '', x)),
+      '</div>',
+      sep = '\n'
+    )
+  }
+)
 ```
+
+```{r about-the-article, echo = FALSE, comment = ""}
+warning("This article demonstrates how to use `geom_braid()` with `method = 'step'` to fill the area between two alternating steps drawn with `geom_step()`.")
+```
+
+Let's take a look at the points scored during a professional basketball game.
+
+## Getting Started
+
+`ggbraid` provides a data frame called `hoops` with the points scored throughout 
+the course of Game 1 of the 2018 National Basketball Association (NBA) Finals between the Golden State Warriors and the Cleveland Cavaliers.
 
 ```{r hoops, message=FALSE}
 library(ggplot2)
@@ -30,6 +52,15 @@ data(hoops)
 hoops
 ```
 
+`time` is game time in `MM'SS"` format, 
+`team` is the team responsible for scoring, Golden State 
+Warriors (`GSW`) or Cleveland Cavaliers (`CLE`), and `points` is the number of
+points scored, either 1, 2, or 3 (or 0, simply marking the start and end of the game).
+
+## Cumulative Score
+
+Let's transform `hoops` into `hoops_score` with the cumulative score for each team over time.
+
 ```{r hoops-score, message=FALSE}
 hoops_score <- hoops %>%
   group_by(team) %>%
@@ -39,10 +70,28 @@ hoops_score <- hoops %>%
 hoops_score
 ```
 
+Now plot the cumulative scores with `ggplot()` and `geom_step()`.^[Why `geom_step()` rather than `geom_line()`? After a team scores points, it 
+remains at that score until the next time it scores points — there is a distinct
+jump, or step, that happens. Using `geom_line()` to connect the scores between 
+these two moments would suggest that the team is gradually accumulating points 
+over time, and that is not the case.]
+
 ```{r hoops-score-plot}
 ggplot(hoops_score) +
   geom_step(aes(x = time, y = score, color = team))
 ```
+
+Not bad.
+
+But come to think of it, there is not a compelling reason to show _cumulative_ score — there are no negative points in basketball so the cumulative score always goes up and to the right. Displaying the data this way does not add any value.
+
+What we really care about is the _score margin_, the difference in score between GSW and CLE at any point during the game.
+
+## Score Margin
+
+Transform `hoops` into `hoops_wide` with `cle` as the cumulative score of the 
+Cavaliers, `gsw` as the cumulative score of the Warriors, and `diff` as the 
+difference between them (`gsw - cle`).
 
 ```{r hoops-wide}
 hoops_wide <- hoops %>%
@@ -60,14 +109,19 @@ hoops_wide <- hoops %>%
 hoops_wide
 ```
 
+Now plot `hoops_wide` and add a horizontal line at 0 indicating a tied game.
+
 ```{r hoops-wide-plot}
 ggplot(hoops_wide) +
   geom_step(aes(x = time, y = diff)) +
   geom_hline(yintercept = 0)
 ```
 
-```{r hoops-wide-plot-polished}
+Better! 
 
+Let's improve the aesthetics and add details that make it more clear what's going on.
+
+```{r hoops-wide-plot-polished}
 gsw_color <- "#006BB6"
 cle_color <- "#860038"
 
@@ -116,6 +170,16 @@ p <- ggplot(hoops_wide) +
 p
 ```
 
+With the data displayed this way, it's easy to see how the game progressed.
+
+After an initial struggle in Q1, the Cavaliers took an early lead in Q2 only to have the Warriors claw it all back to even the score at halftime. In Q3, the Warriors claimed the lead, then lost it, and reclaimed it. And in Q4, the Cavaliers again evened the score, ending the game with a tie and sending the teams into a 5-minute overtime (OT1). The Warriors quickly gained the upper hand in overtime and won the game by 10 points.
+
+## Braiding Steps
+
+As an additional detail, suppose we want to fill the region between the score margin steps and the horizontal line at 0.
+
+Maybe we can use `geom_ribbon()` to do this?
+
 ```{r geom-ribbon-hoops}
 p +
   geom_ribbon(
@@ -123,6 +187,12 @@ p +
     alpha = 0.2
   )
 ```
+
+Hmm, that didn't work.
+
+`geom_ribbon()` cannot draw a ribbon between series drawn with `geom_step()` — at least, not without a little help. The [ggalt](https://github.com/hrbrmstr/ggalt) package provides a `stat_stepribbon()` function that `geom_ribbon()` can use to draw "step ribbons."
+
+ggbraid offers similar functionality. Simply replace `geom_ribbon()` with `geom_braid()` and set `method = "step"`.
 
 ```{r geom-braid-hoops-without-fill}
 p +
@@ -133,6 +203,10 @@ p +
   )
 ```
 
+Voila!
+
+While we're at it, why don't we color the ribbon differently depending on the team that is winning?
+
 ```{r geom-braid-hoops-with-fill}
 p +
   geom_braid(
@@ -141,3 +215,5 @@ p +
     alpha = 0.7
   )
 ```
+
+😎🏀
