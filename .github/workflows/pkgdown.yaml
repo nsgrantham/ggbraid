@@ -30,6 +30,7 @@ jobs:
             ggplot2
             dplyr
             tidyr
+            readr
             ggtext
             glue
             hms
