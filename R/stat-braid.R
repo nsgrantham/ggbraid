@@ -62,13 +62,11 @@ StatBraid <- ggproto("StatBraid", Stat,
 		has_fill <- "fill" %in% colnames(data)
 
 		if (has_fill) {
-			data <- transform(data,
-				braid = as.logical(as.integer(as.factor(fill)) - 1)
-			)
+			data <- transform(data, braid = as.logical(as.integer(as.factor(fill)) - 1))
 		} else {
 			data <- transform(data, braid = ymin < ymax)
-			data <- transform(data, group = as.integer(braid) + 1)
 		}
+		data <- transform(data, group = as.integer(braid) + 1)
 		data$group[is.na(data$braid)] <- -1
 
 		if (any(is.na(data[, c("ymin", "ymax")]))) {

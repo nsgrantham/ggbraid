@@ -1,3 +1,9 @@
+# ggbraid 0.2.1
+
+Released 2022-04-27
+
+* Fixed problem where braiding fails when `x` is non-numeric
+
 # ggbraid 0.2.0
 
 Released 2022-04-25
