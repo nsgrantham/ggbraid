@@ -5,3 +5,4 @@
 ^pkgdown$
 ^README\.Rmd$
 ^\.github$
+^man/figures/logo\.png$
