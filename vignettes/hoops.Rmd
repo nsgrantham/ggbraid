@@ -203,8 +203,6 @@ p +
   )
 ```
 
-Voila!
-
 While we're at it, why don't we color the ribbon differently depending on the team that is winning?
 
 ```{r geom-braid-hoops-with-fill}
