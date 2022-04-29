@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ggbraid <img src="man/figures/logo.png" align="right" width="200" style="float:right; width:200px;" />
+# ggbraid <img src="man/figures/logo.png" style="float:right; width:200px;" />
 
 <!-- badges: start -->
 <!-- badges: end -->
