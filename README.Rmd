@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ggbraid
+# ggbraid <img src="man/figures/logo.png" align="right" height=230/>
 
 <!-- badges: start -->
 <!-- badges: end -->
