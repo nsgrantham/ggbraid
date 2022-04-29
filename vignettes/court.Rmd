@@ -263,14 +263,14 @@ ggplot(court, aes(x = moderate(mqscore), y = year)) +
   geom_text(aes(label = name), data = selected_justices_text, size = 4, alpha = 0.7, vjust = -0.7) +
   geom_text(aes(label = year, x = 0), data = decades, size = 4, alpha = 0.4) +
   annotate("rect", xmin = -Inf, xmax = 0, ymin = -Inf, ymax = Inf, fill = "blue", alpha = 0.06) +
-  annotate("rect", xmin = 0, xmax = Inf, ymin = -Inf, ymax = Inf, fill = "red", alpha = 0.05) +
-  annotate("text", x = 0, y = 2032, label = "Ideological Leaning of the US Supreme Court", fontface = "bold", size = 7) +
-  annotate("text", x = 0, y = 2029, label = "Adjusted Martin-Quinn scores of every justice serving since 1937", size = 4.5) +
-  annotate("text", x = 2.85, y = 1938.5, label = "Data from mqscores.lsa.umich.edu\nGraphic from nsgrantham.github.io/ggbraid/articles/court", size = 3, hjust = 1) +
-  annotate("text", x = -0.5, y = 2025, label = "← More Liberal", hjust = 1, color = "blue", size = 5, alpha = 0.6) +
-  annotate("text", x = 0.5, y = 2025, label = "More Conservative →", hjust = 0, color = "red", size = 5, alpha = 0.6) +
+  annotate("rect", xmin = 0, xmax = Inf, ymin = -Inf, ymax = Inf, fill = "red", alpha = 0.06) +
+  annotate("text", x = 0, y = 2032, label = "Ideological Leaning of the US Supreme Court", fontface = "bold", size = 6.5) +
+  annotate("text", x = 0, y = 2029, label = "Adjusted Martin-Quinn scores of every justice serving since 1937", size = 4) +
+  annotate("text", x = 3, y = 1938.5, label = "Data from mqscores.lsa.umich.edu\nGraphic from nsgrantham.github.io/ggbraid/articles/court", size = 3, hjust = 1) +
+  annotate("text", x = -0.5, y = 2025, label = "← More Liberal", hjust = 1, color = "blue", size = 4.5, alpha = 0.6) +
+  annotate("text", x = 0.5, y = 2025, label = "More Conservative →", hjust = 0, color = "red", size = 4.5, alpha = 0.6) +
   annotate("text", x = 0.75, y = 2021.1, label = "Court Median", fontface = "bold", size = 4) +
-  scale_x_continuous(limits = c(-3, 3), expand = c(0.01, 0.01)) +
+  scale_x_continuous(limits = c(-3.05, 3.05), expand = c(0.01, 0.01)) +
   scale_y_continuous(limits = c(NA, 2034.5), expand = c(0.01, 0.05)) +
   scale_fill_manual(values = c("red", "blue")) +
   guides(fill = "none") +
