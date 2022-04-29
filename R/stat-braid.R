@@ -198,7 +198,7 @@ get_braid_map <- function(data) {
 		sort = FALSE
 	)
 	if ("fill" %in% colnames(braid_map)) {
-		is_fill_missing <- with(braid_map, is.na(fill) && !is.na(braid))
+		is_fill_missing <- with(braid_map, is.na(fill) & !is.na(braid))
 		braid_map[is_fill_missing, "fill"] <- braid_map[is_fill_missing, "braid"]
 	}
 	braid_map
