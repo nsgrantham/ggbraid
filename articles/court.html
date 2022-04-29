@@ -162,9 +162,6 @@
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="va">mqscore</span>, xmax <span class="op">=</span> <span class="fl">0</span>, fill <span class="op">=</span> <span class="va">mqscore</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span>,
     method <span class="op">=</span> <span class="st">"line"</span>
   <span class="op">)</span></code></pre></div>
-<div class="alert alert-info">
-<p>#&gt; Warning in is.na(fill) &amp;&amp; !is.na(braid): ‘length(x) = 3 &gt; 1’ in coercion to #&gt; ‘logical(1)’</p>
-</div>
 <p><img src="court_files/figure-html/court-plot-geom-braid-1.png" width="100%"></p>
 <p>Touching this up a bit, we can remove the vertical line at zero because it is no longer necessary, and we can remove the <code>fill</code> aesthetic legend because it doesn’t add any value. While we’re at it, let’s change the colors and add some transparency.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -177,9 +174,6 @@
   <span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></code></pre></div>
-<div class="alert alert-info">
-<p>#&gt; Warning in is.na(fill) &amp;&amp; !is.na(braid): ‘length(x) = 3 &gt; 1’ in coercion to #&gt; ‘logical(1)’</p>
-</div>
 <p><img src="court_files/figure-html/court-plot-geom-braid-improved-1.png" width="100%"></p>
 <p>Voila.</p>
 </div>
@@ -226,9 +220,6 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_path</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group <span class="op">=</span> <span class="va">name</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">justices</span>, size <span class="op">=</span> <span class="fl">0.3</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></code></pre></div>
-<div class="alert alert-info">
-<p>#&gt; Warning in is.na(fill) &amp;&amp; !is.na(braid): ‘length(x) = 3 &gt; 1’ in coercion to #&gt; ‘logical(1)’</p>
-</div>
 <p><img src="court_files/figure-html/justices-plot-not-rescaled-1.png" width="100%"></p>
 <p>Wow.</p>
 <p>It should come as no surprise that individual justices hold much stronger ideologies than the hypothetical “median justice”. But I did not expect the spread to be quite so wide.</p>
@@ -253,9 +244,6 @@
     axis.ticks.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,
     axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>
   <span class="op">)</span></code></pre></div>
-<div class="alert alert-info">
-<p>#&gt; Warning in is.na(fill) &amp;&amp; !is.na(braid): ‘length(x) = 3 &gt; 1’ in coercion to #&gt; ‘logical(1)’</p>
-</div>
 <p><img src="court_files/figure-html/justices-plot-rescaled-1.png" width="100%"></p>
 <p>This is looking better.</p>
 <p>Let’s select a handful of justices to highlight.</p>
@@ -330,9 +318,6 @@
     axis.ticks.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,
     axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>
   <span class="op">)</span></code></pre></div>
-<div class="alert alert-info">
-<p>#&gt; Warning in is.na(fill) &amp;&amp; !is.na(braid): ‘length(x) = 3 &gt; 1’ in coercion to #&gt; ‘logical(1)’</p>
-</div>
 <p><img src="court_files/figure-html/plot-with-selected-justices-1.png" width="100%"></p>
 </div>
 <div class="section level2">
@@ -376,9 +361,6 @@
     axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,
     axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>
   <span class="op">)</span></code></pre></div>
-<div class="alert alert-info">
-<p>#&gt; Warning in is.na(fill) &amp;&amp; !is.na(braid): ‘length(x) = 3 &gt; 1’ in coercion to #&gt; ‘logical(1)’</p>
-</div>
 <p><img src="court_files/figure-html/final-plot-1.png" width="100%"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
