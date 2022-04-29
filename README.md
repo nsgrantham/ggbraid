@@ -82,7 +82,7 @@ ggplot() +
   guides(linetype = "none")
 ```
 
-<img src="man/figures/README-geom-ribbon-without-fill-1.png" width="100%" />
+![](man/figures/README-geom-ribbon-without-fill-1.png)<!-- -->
 
 ``` r
 ggplot() +
@@ -91,7 +91,7 @@ ggplot() +
   guides(linetype = "none", fill = "none")
 ```
 
-<img src="man/figures/README-geom-ribbon-with-fill-1.png" width="100%" />
+![](man/figures/README-geom-ribbon-with-fill-1.png)<!-- -->
 
 ``` r
 ggplot() +
@@ -101,4 +101,4 @@ ggplot() +
 #> `geom_braid()` using method = 'line'
 ```
 
-<img src="man/figures/README-geom-braid-with-fill-1.png" width="100%" />
+![](man/figures/README-geom-braid-with-fill-1.png)<!-- -->
