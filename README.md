@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ggbraid <img src="man/figures/logo.png" style="float:right; width:200px;" />
+# ggbraid <img src="man/figures/logo.png" align="right" width="200" style="float:right; width:200px;" />
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -82,7 +82,7 @@ ggplot() +
   guides(linetype = "none")
 ```
 
-![](man/figures/README-geom-ribbon-without-fill-1.png)<!-- -->
+<img src="man/figures/README-geom-ribbon-without-fill-1.png" width="100%" />
 
 ``` r
 ggplot() +
@@ -91,7 +91,7 @@ ggplot() +
   guides(linetype = "none", fill = "none")
 ```
 
-![](man/figures/README-geom-ribbon-with-fill-1.png)<!-- -->
+<img src="man/figures/README-geom-ribbon-with-fill-1.png" width="100%" />
 
 ``` r
 ggplot() +
@@ -101,4 +101,4 @@ ggplot() +
 #> `geom_braid()` using method = 'line'
 ```
 
-![](man/figures/README-geom-braid-with-fill-1.png)<!-- -->
+<img src="man/figures/README-geom-braid-with-fill-1.png" width="100%" />

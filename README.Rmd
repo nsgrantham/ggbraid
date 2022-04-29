@@ -9,14 +9,12 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  #out.width = "100%",
-  fig.height = 5,
-  fig.width = 8,
+  out.width = "100%",
   dpi = 300
 )
 ```
 
-# ggbraid <img src="man/figures/logo.png" style="float:right; width:200px;" />
+# ggbraid <img src="man/figures/logo.png" align="right" width="200" style="float:right; width:200px;" />
 
 <!-- badges: start -->
 <!-- badges: end -->
