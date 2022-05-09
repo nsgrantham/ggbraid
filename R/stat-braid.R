@@ -29,9 +29,11 @@ stat_braid <- function(
 }
 
 
-#' @rdname ggplot2-ggproto
+#' Proto braid
+#' @rdname ggbraid-ggproto
 #' @format NULL
 #' @usage NULL
+#' @keywords internal
 #' @export
 StatBraid <- ggproto("StatBraid", Stat,
 
@@ -123,6 +125,7 @@ StatBraid <- ggproto("StatBraid", Stat,
 	}
 )
 
+#' @importFrom stats na.omit
 get_braid_op <- function(data) {
 	braid_na.omit <- na.omit(data$braid)
 	braid_ops <- c(`<`, `<=`, `>`, `>=`)
@@ -178,6 +181,7 @@ impute_na <- function(data, method) {
 		}
 	}
 
+	row_id <- ymin <- ymax <- NULL  # only included to silence notes in devtools::check()
 	rows <- rownames(data)
 	data <- transform(data, row_id = 1:n, braid = braid_op(ymin, ymax))
 	data <- data[, !(colnames(data) %in% c("fill", "group"))]
@@ -255,6 +259,7 @@ braid_lines <- function(data) {
 }
 
 braid_lines_row_pair <- function(row_pair) {
+	y1 <- y2 <- NULL  # only included to silence notes in devtools::check()
 	row1 <- row_pair[1, ]
 	row2 <- row_pair[2, ]
 
@@ -370,6 +375,7 @@ braid_steps <- function (data) {
 }
 
 braid_steps_row_pair <- function(row_pair) {
+	y1 <- y2 <- NULL  # only included to silence notes in devtools::check()
 	row1 <- row_pair[1, ]
 	row2 <- row_pair[2, ]
 

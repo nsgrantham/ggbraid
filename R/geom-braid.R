@@ -175,7 +175,8 @@ geom_braid <- function(
 	)
 }
 
-#' @rdname ggplot2-ggproto
+#' Proto braid
+#' @rdname ggbraid-ggproto
 #' @format NULL
 #' @usage NULL
 #' @export

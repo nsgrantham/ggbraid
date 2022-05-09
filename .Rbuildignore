@@ -6,3 +6,4 @@
 ^README\.Rmd$
 ^\.github$
 ^man/figures/logo\.png$
+^LICENSE\.md$

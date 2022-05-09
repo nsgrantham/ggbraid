@@ -1,7 +1,7 @@
 Package: ggbraid
 Type: Package
 Title: Braid Ribbons in ggplot2
-Version: 0.2.1
+Version: 0.2.2
 Author: Neal Grantham <neal@nsgrantham.com>
 Maintainer: Neal Grantham <neal@nsgrantham.com>
 Description: ggbraid provides a new stat, `stat_braid()`, that extends the 
@@ -18,7 +18,14 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Suggests: 
     rmarkdown,
-    knitr
+    knitr,
+    scales,
+    readr,
+    dplyr,
+    tidyr,
+    ggtext,
+    glue,
+    hms
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)

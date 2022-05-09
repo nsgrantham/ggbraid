@@ -6,6 +6,8 @@
 \alias{ggbraid-package}
 \title{ggbraid: Braid Ribbons in ggplot2}
 \description{
+\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+
 ggbraid provides a new stat, `stat_braid()`, that extends the functionality of `geom_ribbon()` to correctly fill the area between two alternating lines (or steps) with two different colors. ggbraid also provides a geom, `geom_braid()`, that wraps `geom_ribbon()` and uses `stat_braid()` by default.
 }
 \seealso{

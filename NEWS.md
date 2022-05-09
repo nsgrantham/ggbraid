@@ -1,3 +1,12 @@
+# ggbraid 0.2.2
+
+Released 2022-05-08
+
+* Add documentation for datasets `temps` and `hoops`
+
+* Fix warnings and notes from R CMD check
+
+
 # ggbraid 0.2.1
 
 Released 2022-04-27
