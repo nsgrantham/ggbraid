@@ -23,6 +23,9 @@ devtools::install_github("nsgrantham/ggbraid")
 
 ## Usage
 
+To demonstrate, let’s generate a long dataset with two alternating
+series.
+
 ``` r
 library(ggplot2)
 library(ggbraid)
@@ -55,6 +58,9 @@ df_long
 #> # … with 32 more rows
 ```
 
+And let’s pivot the dataset wider so we can use it with `geom_ribbon()`
+and `geom_braid()`.
+
 ``` r
 df_wide <- pivot_wider(df_long, names_from = z, values_from = y)
 
@@ -75,14 +81,26 @@ df_wide
 #> # … with 11 more rows
 ```
 
+Now let’s draw the two series as lines and fill the area between them
+with a single color using `geom_ribbon()`.
+
 ``` r
 ggplot() +
   geom_line(aes(x, y, linetype = z), data = df_long) +
-  geom_ribbon(aes(x, ymin = a, ymax = b), data = df_wide, alpha = 0.2) + 
+  geom_ribbon(aes(x, ymin = a, ymax = b), data = df_wide, alpha = 0.2) +
   guides(linetype = "none")
 ```
 
 <img src="man/figures/README-geom-ribbon-without-fill-1.png" width="100%" />
+
+Looking good.
+
+Now what about two different colors? One color for when the solid line
+is *above* the dashed line, and a different color when the solid line is
+*below* the dashed line.
+
+That shouldn’t be too hard. Let’s use `geom_ribbon()` again and map
+`a < b` to the `fill` aesthetic.
 
 ``` r
 ggplot() +
@@ -93,6 +111,13 @@ ggplot() +
 
 <img src="man/figures/README-geom-ribbon-with-fill-1.png" width="100%" />
 
+Chaos. What happened?
+
+This is called the “Unbraided Ribbon Problem”.
+
+Not to worry, we can braid the unbraided ribbon with ggbraid — simply
+replace `geom_ribbon()` with `geom_braid()`.
+
 ``` r
 ggplot() +
   geom_line(aes(x, y, linetype = z), data = df_long) +
@@ -102,3 +127,18 @@ ggplot() +
 ```
 
 <img src="man/figures/README-geom-braid-with-fill-1.png" width="100%" />
+
+There we go.
+
+## Articles
+
+-   For an introduction to ggbraid and the “Unbraided Ribbon Problem”,
+    see [Average Daily
+    Temperatures](https://nsgrantham.github.io/ggbraid/articles/temps.html).
+
+-   To learn how to use `geom_braid()` with `geom_step()`, see [NBA
+    Finals
+    Game](https://nsgrantham.github.io/ggbraid/articles/hoops.html).
+
+-   ggbraid supports flipped aesthetics, see [US Supreme
+    Court](https://nsgrantham.github.io/ggbraid/articles/court.html).
