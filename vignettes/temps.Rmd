@@ -35,7 +35,7 @@ Let's compare the temperatures of two cities in the United States: New York, New
 
 ## Getting Started
 
-`ggbraid` provides a data frame called `temps`, with daily average temperatures of New York and San Francisco in 2021 as recorded by the US National Weather Service (NWS) at [weather.gov](https://weather.gov).^[It is difficult to pull data from the NWS. It does not provide the data via an API and the data it returns through its point-and-click interface isn't in plain text format! To make matters worse, you can only retrieve data from a city one month at a time. For San Francisco, visit [weather.gov/wrh/climate?wfo=mtr](https://www.weather.gov/wrh/climate?wfo=mtr) and choose "San Francisco City, CA", "Daily data for a month", and a month from 2021; for New York, visit [weather.gov/wrh/climate?wfo=okx](https://www.weather.gov/wrh/climate?wfo=okx) and choose "NY-Central Park Area", "Daily data for a month", and a month from 2021. Copy and paste the data into spreadsheet software for further processing.]  
+`ggbraid` provides a data frame called `temps`, with daily average temperatures of New York and San Francisco in 2021 as recorded by the US National Weather Service (NWS) at [weather.gov](https://www.weather.gov/).^[It is difficult to pull data from the NWS. It does not provide the data via an API and the data it returns through its point-and-click interface isn't in plain text format! To make matters worse, you can only retrieve data from a city one month at a time. For San Francisco, visit [weather.gov/wrh/climate?wfo=mtr](https://www.weather.gov/wrh/climate?wfo=mtr) and choose "San Francisco City, CA", "Daily data for a month", and a month from 2021; for New York, visit [weather.gov/wrh/climate?wfo=okx](https://www.weather.gov/wrh/climate?wfo=okx) and choose "NY-Central Park Area", "Daily data for a month", and a month from 2021. Copy and paste the data into spreadsheet software for further processing.]
 
 ```{r temps, message=FALSE}
 library(ggplot2)
@@ -75,7 +75,7 @@ p <- ggplot() +
     title = "Average Daily Temperatures in 2021",
     linetype = NULL,
     y = NULL,
-    x = NULL 
+    x = NULL
   ) +
   theme_minimal(base_size = 14) +
   theme(
@@ -98,7 +98,7 @@ Much better.
 
 ## Fun with Ribbons
 
-Let's fill the area between the two lines. We can do so with `geom_ribbon()` from `ggplot2`. 
+Let's fill the area between the two lines. We can do so with `geom_ribbon()` from `ggplot2`.
 
 `geom_ribbon()` requires three aesthetics: `x`, `ymin`, and `ymax`. We can map `date` to `x` as we did in `geom_line()`. However, we'll need to transform `temps` to create new variables that we can map to `ymin` and `ymax`.
 
@@ -164,7 +164,7 @@ After we have pass `temps_wide` to `geom_ribbon()` and map `date` to `x`, `ny` t
 
 (`x` is the integer representation of `date`, the number of days since January 1, 1970, the "Unix epoch")
 
-Ok, note the middle row. `ymin` and `ymax` are equal here, so this is a point where the two lines intersect. It turns out that `geom_ribbon()` requires two rows for every line intersection, one row where `fill` is `FALSE` and another row where `fill` is `TRUE`. 
+Ok, note the middle row. `ymin` and `ymax` are equal here, so this is a point where the two lines intersect. It turns out that `geom_ribbon()` requires two rows for every line intersection, one row where `fill` is `FALSE` and another row where `fill` is `TRUE`.
 
 So we must insert a new row in the data, yielding the following:
 
@@ -185,7 +185,7 @@ There are instances where the two lines intersect _between_ two rows in the data
 
 ## Braiding with ggbraid
 
-The functions in `ggbraid` take care of all the braiding for you. 
+The functions in `ggbraid` take care of all the braiding for you.
 Simply replace `geom_ribbon()` with `geom_braid()`.
 
 ```{r geom-braid-with-fill}

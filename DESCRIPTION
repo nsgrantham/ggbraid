@@ -1,22 +1,26 @@
 Package: ggbraid
 Type: Package
-Title: Braid Ribbons in ggplot2
+Title: Braid Ribbons in 'ggplot2'
 Version: 0.2.2
-Author: Neal Grantham <neal@nsgrantham.com>
-Maintainer: Neal Grantham <neal@nsgrantham.com>
-Description: ggbraid provides a new stat, `stat_braid()`, that extends the 
-    functionality of `geom_ribbon()` to correctly fill the area between two 
-    alternating lines (or steps) with two different colors. ggbraid also 
-    provides a geom, `geom_braid()`, that wraps `geom_ribbon()` and uses 
-    `stat_braid()` by default.
+Authors@R:
+    person(
+        given = "Neal",
+        family = "Grantham",
+        role = c("aut", "cre"),
+        email = "neal@nsgrantham.com"
+    )
+Description: A new stat, stat_braid(), that extends the functionality of
+    geom_ribbon() to correctly fill the area between two alternating lines
+    (or steps) with two different colors, and a geom, geom_braid(), that
+    wraps geom_ribbon() and uses stat_braid() by default.
+URL: https://nsgrantham.github.io/ggbraid/, https://github.com/nsgrantham/ggbraid/
+BugReports: https://github.com/nsgrantham/ggbraid/issues/
 License: MIT + file LICENSE
-Encoding: UTF-8
-LazyData: true
+Depends:
+    R (>= 3.4.0)
 Imports:
-	ggplot2
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
-Suggests: 
+	ggplot2 (>= 3.0.0)
+Suggests:
     rmarkdown,
     knitr,
     scales,
@@ -26,7 +30,8 @@ Suggests:
     ggtext,
     glue,
     hms
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.2
+Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
-Depends: 
-    R (>= 2.10)
-URL: https://nsgrantham.github.io/ggbraid, https://github.com/nsgrantham/ggbraid
