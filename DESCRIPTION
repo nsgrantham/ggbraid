@@ -19,7 +19,7 @@ License: MIT + file LICENSE
 Depends:
     R (>= 3.4.0)
 Imports:
-	ggplot2 (>= 3.0.0)
+    ggplot2 (>= 3.0.0)
 Suggests:
     rmarkdown,
     knitr,
