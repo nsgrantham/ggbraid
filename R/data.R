@@ -8,19 +8,22 @@
 #' plain text format! To make matters worse, you can only retrieve data from a
 #' city one month at a time.
 #'
-#' For San Francisco, visit https://www.weather.gov/wrh/climate?wfo=mtr
+#' For San Francisco, visit \url{https://www.weather.gov/wrh/climate?wfo=mtr}
 #' and choose "San Francisco City, CA", "Daily data for a month", and a month
-#' from 2021; for New York, visit https://www.weather.gov/wrh/climate?wfo=okx
+#' from 2021; for New York, visit \url{https://www.weather.gov/wrh/climate?wfo=okx}
 #' and choose "NY-Central Park Area", "Daily data for a month", and a month from
 #' 2021. Copy and paste the data into spreadsheet software for further processing.
 #'
 #' @format A data frame (specifically a tbl_df) with 730 rows and 3 variables:
 #' \describe{
-#'   \item{\code{city}}{New York or San Francisco}
+#'   \item{\code{city}}{`New York` or `San Francisco`}
 #'   \item{\code{date}}{Date in \code{YYYY-MM-DD} format}
 #'   \item{\code{avg}}{Average temperature in degrees Fahrenheit (°F) rounded to
 #'   the nearest half degree}
 #' }
+#'
+#' @examples
+#' temps
 "temps"
 
 
@@ -32,9 +35,12 @@
 #'
 #' @format A data frame (specifically a tbl_df) with 129 rows and 3 variables:
 #' \describe{
-#'   \item{\code{time}}{Game time in \code{MM\\\'SS\\\"} format}
-#'   \item{\code{team}}{Golden State Warriors (GSW) or Cleveland Cavaliers (CLE)}
+#'   \item{\code{time}}{Game time}
+#'   \item{\code{team}}{Golden State Warriors (`GSW`) or Cleveland Cavaliers (`CLE`)}
 #'   \item{\code{points}}{Points scored, either 1, 2, or 3 (or 0, only in cases
 #'     to mark the start and end of the game)}
 #' }
+#'
+#' @examples
+#' hoops
 "hoops"

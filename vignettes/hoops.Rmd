@@ -35,7 +35,7 @@ Let's take a look at the points scored during a professional basketball game.
 
 ## Getting Started
 
-`ggbraid` provides a data frame called `hoops` with the points scored throughout 
+ggbraid provides a data frame called `hoops` with the points scored throughout
 the course of Game 1 of the 2018 National Basketball Association (NBA) Finals between the Golden State Warriors and the Cleveland Cavaliers.
 
 ```{r hoops, message=FALSE}
@@ -52,8 +52,8 @@ data(hoops)
 hoops
 ```
 
-`time` is game time in `MM'SS"` format, 
-`team` is the team responsible for scoring, Golden State 
+`time` is game time in `MM'SS"` format,
+`team` is the team responsible for scoring, Golden State
 Warriors (`GSW`) or Cleveland Cavaliers (`CLE`), and `points` is the number of
 points scored, either 1, 2, or 3 (or 0, simply marking the start and end of the game).
 
@@ -70,10 +70,10 @@ hoops_score <- hoops %>%
 hoops_score
 ```
 
-Now plot the cumulative scores with `ggplot()` and `geom_step()`.^[Why `geom_step()` rather than `geom_line()`? After a team scores points, it 
+Now plot the cumulative scores with `ggplot()` and `geom_step()`.^[Why `geom_step()` rather than `geom_line()`? After a team scores points, it
 remains at that score until the next time it scores points — there is a distinct
-jump, or step, that happens. Using `geom_line()` to connect the scores between 
-these two moments would suggest that the team is gradually accumulating points 
+jump, or step, that happens. Using `geom_line()` to connect the scores between
+these two moments would suggest that the team is gradually accumulating points
 over time, and that is not the case.]
 
 ```{r hoops-score-plot}
@@ -89,8 +89,8 @@ What we really care about is the _score margin_, the difference in score between
 
 ## Score Margin
 
-Transform `hoops` into `hoops_wide` with `cle` as the cumulative score of the 
-Cavaliers, `gsw` as the cumulative score of the Warriors, and `diff` as the 
+Transform `hoops` into `hoops_wide` with `cle` as the cumulative score of the
+Cavaliers, `gsw` as the cumulative score of the Warriors, and `diff` as the
 difference between them (`gsw - cle`).
 
 ```{r hoops-wide}
@@ -117,7 +117,7 @@ ggplot(hoops_wide) +
   geom_hline(yintercept = 0)
 ```
 
-Better! 
+Better!
 
 Let's improve the aesthetics and add details that make it more clear what's going on.
 
@@ -154,7 +154,7 @@ p <- ggplot(hoops_wide) +
     y = NULL,
     x = NULL
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 13) +
   theme(
     plot.title = element_markdown(size = 18),
     plot.title.position = "plot",

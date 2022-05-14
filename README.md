@@ -17,8 +17,8 @@ provides a geom, `geom_braid()`, that wraps `geom_ribbon()` and uses
 You can install the development version of ggbraid from GitHub with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("nsgrantham/ggbraid")
+# install.packages("remotes")
+remotes::install_github("nsgrantham/ggbraid")
 ```
 
 ## Usage
@@ -93,14 +93,12 @@ ggplot() +
 
 <img src="man/figures/README-geom-ribbon-without-fill-1.png" width="100%" />
 
-Looking good.
+Can we fill the area between the two lines with two different colors?
+One color when the solid line is *above* the dashed line, and a
+different color when the solid line is *below* the dashed line?
 
-Now what about two different colors? One color for when the solid line
-is *above* the dashed line, and a different color when the solid line is
-*below* the dashed line.
-
-That shouldn’t be too hard. Let’s use `geom_ribbon()` again and map
-`a < b` to the `fill` aesthetic.
+That shouldn’t be hard. Let’s map `a < b` to the `fill` aesthetic in
+`geom_ribbon()` and…
 
 ``` r
 ggplot() +
@@ -113,7 +111,7 @@ ggplot() +
 
 Chaos. What happened?
 
-This is called the “Unbraided Ribbon Problem”.
+This is the “Unbraided Ribbon Problem”.
 
 Not to worry, we can braid the unbraided ribbon with ggbraid — simply
 replace `geom_ribbon()` with `geom_braid()`.
@@ -127,8 +125,6 @@ ggplot() +
 ```
 
 <img src="man/figures/README-geom-braid-with-fill-1.png" width="100%" />
-
-There we go.
 
 ## Articles
 
