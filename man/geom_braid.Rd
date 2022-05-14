@@ -81,6 +81,9 @@ the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 
 \item{geom}{Override the default connection with \code{geom_braid()}.}
 }
+\value{
+A ggplot2 layer that can be added to a plot created with \code{ggplot()}.
+}
 \description{
 \code{geom_braid()} is an extension of \code{geom_ribbon()} that uses \code{stat_braid()}
 to correctly fill the area between two alternating series (lines or steps)

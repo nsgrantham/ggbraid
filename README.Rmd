@@ -26,8 +26,8 @@ ggbraid provides a new stat, `stat_braid()`, that extends the functionality of `
 You can install the development version of ggbraid from GitHub with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("nsgrantham/ggbraid")
+# install.packages("remotes")
+remotes::install_github("nsgrantham/ggbraid")
 ```
 
 ## Usage
@@ -69,11 +69,9 @@ ggplot() +
   guides(linetype = "none")
 ```
 
-Looking good.
+Now what if we filled the area between the two lines with two different colors? One color when the solid line is _above_ the dashed line, and a different color when the solid line is _below_ the dashed line.
 
-Now what about two different colors? One color for when the solid line is _above_ the dashed line, and a different color when the solid line is _below_ the dashed line.
-
-That shouldn't be too hard. Let's use `geom_ribbon()` again and map `a < b` to the `fill` aesthetic.
+That shouldn't be hard. Let's map `a < b` to the `fill` aesthetic in `geom_ribbon()` and...
 
 ```{r geom-ribbon-with-fill}
 ggplot() +
@@ -84,7 +82,7 @@ ggplot() +
 
 Chaos. What happened?
 
-This is called the "Unbraided Ribbon Problem".
+This is the "Unbraided Ribbon Problem".
 
 Not to worry, we can braid the unbraided ribbon with ggbraid — simply replace `geom_ribbon()` with `geom_braid()`.
 
@@ -95,7 +93,6 @@ ggplot() +
   guides(linetype = "none", fill = "none")
 ```
 
-There we go.
 
 ## Articles
 

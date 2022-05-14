@@ -27,7 +27,7 @@ knitr::knit_hooks$set(
 ```
 
 ```{r about-the-article, echo = FALSE, comment = ""}
-warning("This article presents the \"Unbraided Ribbon Problem\" in which `geom_ribbon()` incorrectly fills the area between two alternating lines with two different colors. To fix the problem, we use `geom_braid()` from `ggbraid` with `method = 'line'`.")
+warning("This article presents the \"Unbraided Ribbon Problem\" in which `geom_ribbon()` incorrectly fills the area between two alternating lines with two different colors. To fix the problem, we use `geom_braid()` from ggbraid with `method = 'line'`.")
 ```
 
 
@@ -35,7 +35,7 @@ Let's compare the temperatures of two cities in the United States: New York, New
 
 ## Getting Started
 
-`ggbraid` provides a data frame called `temps`, with daily average temperatures of New York and San Francisco in 2021 as recorded by the US National Weather Service (NWS) at [weather.gov](https://www.weather.gov/).^[It is difficult to pull data from the NWS. It does not provide the data via an API and the data it returns through its point-and-click interface isn't in plain text format! To make matters worse, you can only retrieve data from a city one month at a time. For San Francisco, visit [weather.gov/wrh/climate?wfo=mtr](https://www.weather.gov/wrh/climate?wfo=mtr) and choose "San Francisco City, CA", "Daily data for a month", and a month from 2021; for New York, visit [weather.gov/wrh/climate?wfo=okx](https://www.weather.gov/wrh/climate?wfo=okx) and choose "NY-Central Park Area", "Daily data for a month", and a month from 2021. Copy and paste the data into spreadsheet software for further processing.]
+ggbraid provides a data frame called `temps`, with daily average temperatures of New York and San Francisco in 2021 as recorded by the US National Weather Service (NWS) at [weather.gov](https://www.weather.gov/).^[It is difficult to pull data from the NWS. It does not provide the data via an API and the data it returns through its point-and-click interface isn't in plain text format! To make matters worse, you can only retrieve data from a city one month at a time. For San Francisco, visit [weather.gov/wrh/climate?wfo=mtr](https://www.weather.gov/wrh/climate?wfo=mtr) and choose "San Francisco City, CA", "Daily data for a month", and a month from 2021; for New York, visit [weather.gov/wrh/climate?wfo=okx](https://www.weather.gov/wrh/climate?wfo=okx) and choose "NY-Central Park Area", "Daily data for a month", and a month from 2021. Copy and paste the data into spreadsheet software for further processing.]
 
 ```{r temps, message=FALSE}
 library(ggplot2)
@@ -79,7 +79,7 @@ p <- ggplot() +
   ) +
   theme_minimal(base_size = 14) +
   theme(
-  	plot.title = element_text(size = 16),
+  	plot.title = element_text(size = 15),
     plot.title.position = "plot",
   	legend.position = c(0.75, 1.06),
   	legend.direction = "horizontal",
@@ -185,7 +185,7 @@ There are instances where the two lines intersect _between_ two rows in the data
 
 ## Braiding with ggbraid
 
-The functions in `ggbraid` take care of all the braiding for you.
+The functions in ggbraid take care of all the braiding for you.
 Simply replace `geom_ribbon()` with `geom_braid()`.
 
 ```{r geom-braid-with-fill}
@@ -201,7 +201,7 @@ There we go!
 
 Notice the message from `geom_braid()` that it is using `method = 'line'`. Since we've drawn lines with `geom_line()` we must use `method = 'line'` to determine the point at which the lines intersect when the intersection occurs between two rows in the data. We can silence this message by explicity including `method = 'line'` within `geom_braid()`.
 
-`geom_braid()` isn't a new geometry. It takes the data provided, performs the necessary braiding operations on it, and passes the result to `geom_ribbon()` for drawing. If we'd like, we can still use `geom_ribbon()` and set `stat = 'braid'`.
+`geom_braid()` takes the data provided, performs the necessary braiding operations on it with `stat_braid()`, and passes the result to `geom_ribbon()` for drawing. If we'd like, we can still use `geom_ribbon()` and set `stat = 'braid'`.
 
 ```{r geom-ribbon-stat-braid-with-fill}
 p +

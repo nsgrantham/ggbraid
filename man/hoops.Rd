@@ -7,8 +7,8 @@
 \format{
 A data frame (specifically a tbl_df) with 129 rows and 3 variables:
 \describe{
-\item{\code{time}}{Game time in \code{MM\\\'SS\\\"} format}
-\item{\code{team}}{Golden State Warriors (GSW) or Cleveland Cavaliers (CLE)}
+\item{\code{time}}{Game time}
+\item{\code{team}}{Golden State Warriors (\code{GSW}) or Cleveland Cavaliers (\code{CLE})}
 \item{\code{points}}{Points scored, either 1, 2, or 3 (or 0, only in cases
 to mark the start and end of the game)}
 }
@@ -20,5 +20,8 @@ hoops
 A dataset containing the points scored during Game 1 of the 2018 National
 Basketball Association (NBA) Finals on May 31, 2018 between the Golden State
 Warriors and the Cleveland Cavaliers.
+}
+\examples{
+hoops
 }
 \keyword{datasets}

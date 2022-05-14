@@ -16,7 +16,7 @@
 #'   `method`. If `FALSE`, missing values are kept and appear as gaps in the
 #'   ribbon. If `TRUE`, missing values are removed.
 #' @param geom Override the default connection with `geom_braid()`.
-#'
+#' @return A ggplot2 layer that can be added to a plot created with `ggplot()`.
 #' @examples
 #' library(ggplot2)
 #'

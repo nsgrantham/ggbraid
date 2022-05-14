@@ -7,6 +7,16 @@ authors:
 template:
   bootstrap: 5
 
+reference:
+- title: Functions
+  contents:
+  - geom_braid
+  - stat_braid
+- title: Data
+  contents:
+  - temps
+  - hoops
+
 articles:
 - title: Articles
   navbar: ~
