@@ -92,8 +92,8 @@
 </h2>
 <p>You can install the development version of ggbraid from GitHub with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"nsgrantham/ggbraid"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"nsgrantham/ggbraid"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -155,9 +155,8 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">x</span>, ymin <span class="op">=</span> <span class="va">a</span>, ymax <span class="op">=</span> <span class="va">b</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df_wide</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>linetype <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-geom-ribbon-without-fill-1.png" width="100%"></p>
-<p>Looking good.</p>
-<p>Now what about two different colors? One color for when the solid line is <em>above</em> the dashed line, and a different color when the solid line is <em>below</em> the dashed line.</p>
-<p>That shouldn’t be too hard. Let’s use <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code> again and map <code>a &lt; b</code> to the <code>fill</code> aesthetic.</p>
+<p>Can we fill the area between the two lines with two different colors? One color when the solid line is <em>above</em> the dashed line, and a different color when the solid line is <em>below</em> the dashed line?</p>
+<p>That shouldn’t be hard. Let’s map <code>a &lt; b</code> to the <code>fill</code> aesthetic in <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code> and…</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, linetype <span class="op">=</span> <span class="va">z</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df_long</span><span class="op">)</span> <span class="op">+</span>
@@ -165,7 +164,7 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>linetype <span class="op">=</span> <span class="st">"none"</span>, fill <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-geom-ribbon-with-fill-1.png" width="100%"></p>
 <p>Chaos. What happened?</p>
-<p>This is called the “Unbraided Ribbon Problem”.</p>
+<p>This is the “Unbraided Ribbon Problem”.</p>
 <p>Not to worry, we can braid the unbraided ribbon with ggbraid — simply replace <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code> with <code><a href="reference/geom_braid.html">geom_braid()</a></code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
@@ -174,7 +173,6 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>linetype <span class="op">=</span> <span class="st">"none"</span>, fill <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span>
 <span class="co">#&gt; `geom_braid()` using method = 'line'</span></code></pre></div>
 <p><img src="reference/figures/README-geom-braid-with-fill-1.png" width="100%"></p>
-<p>There we go.</p>
 </div>
 <div class="section level2">
 <h2 id="articles">Articles<a class="anchor" aria-label="anchor" href="#articles"></a>
