@@ -93,9 +93,9 @@ ggplot() +
 
 <img src="man/figures/README-geom-ribbon-without-fill-1.png" width="100%" />
 
-Now what if we filled the area between the two lines with two different
-colors? One color when the solid line is *above* the dashed line, and a
-different color when the solid line is *below* the dashed line.
+Can we fill the area between the two lines with two different colors?
+One color when the solid line is *above* the dashed line, and a
+different color when the solid line is *below* the dashed line?
 
 That shouldn’t be hard. Let’s map `a < b` to the `fill` aesthetic in
 `geom_ribbon()` and…

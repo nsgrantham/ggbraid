@@ -28,7 +28,7 @@ city one month at a time.
 
 For San Francisco, visit \url{https://www.weather.gov/wrh/climate?wfo=mtr}
 and choose "San Francisco City, CA", "Daily data for a month", and a month
-from 2021; for New York, visit https://www.weather.gov/wrh/climate?wfo=okx
+from 2021; for New York, visit \url{https://www.weather.gov/wrh/climate?wfo=okx}
 and choose "NY-Central Park Area", "Daily data for a month", and a month from
 2021. Copy and paste the data into spreadsheet software for further processing.
 }
