@@ -9,6 +9,7 @@ stat_braid <- function(
 	...,
 	method = NULL,
 	na.rm = NA,
+	direction = NULL,
 	show.legend = NA,
 	inherit.aes = TRUE
 ) {
@@ -23,6 +24,7 @@ stat_braid <- function(
 		params = list(
 			method = method,
 			na.rm = na.rm,
+			direction = direction,
 			...
 		)
 	)
@@ -49,6 +51,10 @@ StatBraid <- ggproto("StatBraid", Stat,
 		}
 		if (length(msg) > 0) {
 			message("`geom_braid()` using ", msg)
+		}
+
+		if (identical(params$method, "step") && is.null(params$direction)) {
+			params$direction <- "hv"
 		}
 
 		params
@@ -84,7 +90,7 @@ StatBraid <- ggproto("StatBraid", Stat,
 		flip_data(data, params$flipped_aes)
 	},
 
-	compute_panel = function(data, scales, method = NULL, flipped_aes = FALSE) {
+	compute_panel = function(data, scales, method = NULL, direction = NULL, flipped_aes = FALSE) {
 		data <- flip_data(data, flipped_aes)
 
 		has_fill <- "fill" %in% colnames(data)
@@ -102,7 +108,7 @@ StatBraid <- ggproto("StatBraid", Stat,
 		}
 
 		if (identical(method, "step")) {
-			braided <- compute_braided_steps(data)
+			braided <- compute_braided_steps(data, direction)
 		}
 
 		if (has_fill) {
@@ -364,17 +370,34 @@ braid_lines_row_pair <- function(row_pair) {
 	}
 }
 
-compute_braided_steps <- function(data) {
+compute_braided_steps <- function(data, direction) {
 	splits <- cut(data$group, seq(0.5, max(data$group) + 1.5, by = 2))
-	do.call(rbind, lapply(split(data, splits), braid_steps))
+	do.call(rbind, lapply(split(data, splits), braid_steps, direction = direction))
 }
 
-braid_steps <- function (data) {
+braid_steps <- function(data, direction) {
+	print(data)
 	row_pairs <- lapply(1:nrow(data), function(i) data[i:(i+1), ])
-	do.call(rbind, lapply(row_pairs, braid_steps_row_pair))
+	#print(row_pairs)
+	braid_steps_row_pair <- get_braid_steps_row_pair(direction)
+	data2 <- do.call(rbind, lapply(row_pairs, braid_steps_row_pair))
+	print(data2)
+	data2
 }
 
-braid_steps_row_pair <- function(row_pair) {
+get_braid_steps_row_pair <- function(direction) {
+	if (identical(direction, "hv")) {
+		return(braid_steps_row_pair_hv)
+	}
+	if (identical(direction, "vh")) {
+		return(braid_steps_row_pair_vh)
+	}
+	if (identical(direction, "mid")) {
+		return(braid_steps_row_pair_mid)
+	}
+}
+
+braid_steps_row_pair_hv <- function(row_pair) {
 	y1 <- y2 <- NULL  # only included to silence notes in devtools::check()
 	row1 <- row_pair[1, ]
 	row2 <- row_pair[2, ]
@@ -446,3 +469,152 @@ braid_steps_row_pair <- function(row_pair) {
 		)
 	}
 }
+
+
+braid_steps_row_pair_vh <- function(row_pair) {
+	y1 <- y2 <- NULL  # only included to silence notes in devtools::check()
+	row1 <- row_pair[1, ]
+	row2 <- row_pair[2, ]
+
+	if (is.na(row2$braid)) {
+		return(row1)
+	}
+
+	if (row1$braid == row2$braid) {
+		return(
+			rbind(
+				row1,
+				transform(row2, x = row1$x, group = row1$group)
+			)
+		)
+	}
+
+	if (row1$ymin == row1$ymax) {
+		return(
+			rbind(
+				row1,
+		  	transform(row1, braid = row2$braid, group = row2$group),
+				transform(row2, x = row1$x)
+			)
+		)
+	}
+
+	if (row2$ymin == row2$ymax) {
+		return(
+			rbind(
+				row1,
+		  	transform(row2, x = row1$x, braid = row1$braid, group = row1$group),
+				transform(row2, braid = row1$braid, group = row1$group)
+			)
+		)
+	}
+
+	if (row1$y1 == row2$y1) {
+		return(
+			rbind(
+				row1,
+				transform(row1, ymin = y1, ymax = y1),
+				transform(row2, x = row1$x, ymin = y1, ymax = y1),
+				transform(row2, x = row1$x)
+			)
+		)
+	} else if (row1$y2 == row2$y2) {
+		return(
+			rbind(
+				row1,
+				transform(row1, ymin = y2, ymax = y2),
+				transform(row2, x = row1$x, ymin = y2, ymax = y2),
+				transform(row2, x = row1$x)
+			)
+		)
+	} else {
+		# Two overlapping vertical lines so there are infinite intersections.
+		# Define a single point to serve as a reasonable intersection.
+		y2_mid <- (row1$y2 + row1$y2) / 2
+		y1_mid <- (row1$y1 + row2$y1) / 2
+		y0 <- (y1_mid + y2_mid) / 2
+		return(
+			rbind(
+				row1,
+				transform(row1, ymin = y0, ymax = y0),
+				transform(row2, x = row1$x, ymin = y0, ymax = y0),
+				transform(row2, x = row1$x)
+			)
+		)
+	}
+}
+
+
+braid_steps_row_pair_mid <- function(row_pair) {
+	y1 <- y2 <- NULL  # only included to silence notes in devtools::check()
+	row1 <- row_pair[1, ]
+	row2 <- row_pair[2, ]
+
+	if (is.na(row2$braid)) {
+		return(row1)
+	}
+
+	if (row1$braid == row2$braid) {
+		return(
+			rbind(
+				row1,
+				transform(row1, x = row2$x, group = row2$group)
+			)
+		)
+	}
+
+	if (row1$ymin == row1$ymax) {
+		return(
+			rbind(
+				row1,
+		  	transform(row1, x = row2$x),
+				transform(row1, x = row2$x, braid = row2$braid, group = row2$group)
+			)
+		)
+	}
+
+	if (row2$ymin == row2$ymax) {
+		return(
+			rbind(
+				row1,
+		  	transform(row1, x = row2$x),
+				transform(row2, braid = row1$braid, group = row1$group)
+			)
+		)
+	}
+
+	if (row1$y1 == row2$y1) {
+		return(
+			rbind(
+				row1,
+				transform(row1, x = row2$x),
+				transform(row1, x = row2$x, ymin = y1, ymax = y1),
+				transform(row2, ymin = y1, ymax = y1)
+			)
+		)
+	} else if (row1$y2 == row2$y2) {
+		return(
+			rbind(
+				row1,
+				transform(row1, x = row2$x),
+				transform(row1, x = row2$x, ymin = y2, ymax = y2),
+				transform(row2, ymin = y2, ymax = y2)
+			)
+		)
+	} else {
+		# Two overlapping vertical lines so there are infinite intersections.
+		# Define a single point to serve as a reasonable intersection.
+		y2_mid <- (row1$y2 + row1$y2) / 2
+		y1_mid <- (row1$y1 + row2$y1) / 2
+		y0 <- (y1_mid + y2_mid) / 2
+		return(
+			rbind(
+				row1,
+				transform(row1, x = row2$x),
+				transform(row1, x = row2$x, ymin = y0, ymax = y0),
+				transform(row2, ymin = y0, ymax = y0)
+			)
+		)
+	}
+}
+

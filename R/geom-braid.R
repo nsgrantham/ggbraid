@@ -153,6 +153,7 @@ geom_braid <- function(
 	...,
 	method = NULL,
 	na.rm = NA,
+	direction = NULL,
 	show.legend = NA,
 	inherit.aes = TRUE
 ) {
@@ -160,6 +161,7 @@ geom_braid <- function(
 	params <- list(
 		na.rm = na.rm,
 		method = method,
+		direction = direction,
 		...
 	)
 
