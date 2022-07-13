@@ -376,13 +376,9 @@ compute_braided_steps <- function(data, direction) {
 }
 
 braid_steps <- function(data, direction) {
-	print(data)
 	row_pairs <- lapply(1:nrow(data), function(i) data[i:(i+1), ])
-	#print(row_pairs)
 	braid_steps_row_pair <- get_braid_steps_row_pair(direction)
-	data2 <- do.call(rbind, lapply(row_pairs, braid_steps_row_pair))
-	print(data2)
-	data2
+	do.call(rbind, lapply(row_pairs, braid_steps_row_pair))
 }
 
 get_braid_steps_row_pair <- function(direction) {
@@ -554,11 +550,15 @@ braid_steps_row_pair_mid <- function(row_pair) {
 		return(row1)
 	}
 
+	x0 <- (row1$x + row2$x) / 2
+
 	if (row1$braid == row2$braid) {
 		return(
 			rbind(
 				row1,
-				transform(row1, x = row2$x, group = row2$group)
+				transform(row1, x = x0, group = row2$group),
+				transform(row2, x = x0)
+
 			)
 		)
 	}
@@ -567,8 +567,9 @@ braid_steps_row_pair_mid <- function(row_pair) {
 		return(
 			rbind(
 				row1,
-		  	transform(row1, x = row2$x),
-				transform(row1, x = row2$x, braid = row2$braid, group = row2$group)
+		  	transform(row1, x = x0),
+				transform(row1, x = x0, braid = row2$braid, group = row2$group),
+				transform(row2, x = x0)
 			)
 		)
 	}
@@ -577,8 +578,8 @@ braid_steps_row_pair_mid <- function(row_pair) {
 		return(
 			rbind(
 				row1,
-		  	transform(row1, x = row2$x),
-				transform(row2, braid = row1$braid, group = row1$group)
+		  	transform(row1, x = x0),
+				transform(row2, x = x0, braid = row1$braid, group = row1$group)
 			)
 		)
 	}
@@ -587,18 +588,20 @@ braid_steps_row_pair_mid <- function(row_pair) {
 		return(
 			rbind(
 				row1,
-				transform(row1, x = row2$x),
-				transform(row1, x = row2$x, ymin = y1, ymax = y1),
-				transform(row2, ymin = y1, ymax = y1)
+				transform(row1, x = x0),
+				transform(row1, x = x0, ymin = y1, ymax = y1),
+				transform(row2, x = x0, ymin = y1, ymax = y1),
+				transform(row2, x = x0)
 			)
 		)
 	} else if (row1$y2 == row2$y2) {
 		return(
 			rbind(
 				row1,
-				transform(row1, x = row2$x),
-				transform(row1, x = row2$x, ymin = y2, ymax = y2),
-				transform(row2, ymin = y2, ymax = y2)
+				transform(row1, x = x0),
+				transform(row1, x = x0, ymin = y2, ymax = y2),
+				transform(row2, x = x0, ymin = y2, ymax = y2),
+				transform(row2, x = x0)
 			)
 		)
 	} else {
@@ -610,9 +613,10 @@ braid_steps_row_pair_mid <- function(row_pair) {
 		return(
 			rbind(
 				row1,
-				transform(row1, x = row2$x),
-				transform(row1, x = row2$x, ymin = y0, ymax = y0),
-				transform(row2, ymin = y0, ymax = y0)
+				transform(row1, x = x0),
+				transform(row1, x = x0, ymin = y0, ymax = y0),
+				transform(row2, x = x0, ymin = y0, ymax = y0),
+				transform(row2, x = x0)
 			)
 		)
 	}
