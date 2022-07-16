@@ -83,7 +83,7 @@ StatBraid <- ggproto("StatBraid", Stat,
 			} else if (params$na.rm) {
 				data <- remove_na(data)
 			} else {
-				data <- keep_na(data, method = params$method)
+				data <- keep_na(data, method = params$method, direction = params$direction)
 			}
 		}
 
@@ -214,9 +214,9 @@ get_braid_map <- function(data) {
 	braid_map
 }
 
-keep_na <- function(data, method) {
+keep_na <- function(data, method, direction) {
 	n <- nrow(data)
-	is_prev_na <- TRUE
+	is_prev_braid_na <- TRUE
 
 	for (i in 1:n) {
 		ymin <- data$ymin[i]
@@ -231,20 +231,23 @@ keep_na <- function(data, method) {
 			}
 		}
 
-		if (any(is.na(c(ymin, ymax))) && !is_prev_na) {
-			data[(i+1):n, "group"] <- data[(i+1):n, "group"] + 2
+		if (any(is.na(c(ymin, ymax))) && !is_prev_braid_na) {
+			i_rest <- min(i+1, n):n
+			data[i_rest, "group"] <- data[i_rest, "group"] + 2
 		}
 
 		braid <- data$braid[i]
 		if (is.na(braid)) {
 			data[i, "braid"] <- if (i == 1) NA else data$braid[i-1]
-			if (is_prev_na || identical(method, "line")) {
+			is_rest_braid_na <- all(is.na(data$braid[min(i+1, n):n]))
+			if (identical(method, "line") || is_prev_braid_na || is_rest_braid_na) {
 				data[i, "group"] <- -1
 			} else {
 				data[i, "group"] <- data$group[i-1]
 			}
 		}
-		is_prev_na <- is.na(braid)
+
+		is_prev_braid_na <- is.na(braid)
 	}
 
 	remove_na(data)
