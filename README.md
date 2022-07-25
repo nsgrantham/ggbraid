@@ -14,7 +14,13 @@ provides a geom, `geom_braid()`, that wraps `geom_ribbon()` and uses
 
 ## Installation
 
-You can install the development version of ggbraid from GitHub with:
+Install the production version of ggbraid from CRAN with:
+
+``` r
+install.packages("ggbraid")
+```
+
+Or install the development version of ggbraid from GitHub with:
 
 ``` r
 # install.packages("remotes")

@@ -1,37 +1,34 @@
-Package: ggbraid
 Type: Package
+Package: ggbraid
 Title: Braid Ribbons in 'ggplot2'
 Version: 0.2.2
 Authors@R:
-    person(
-        given = "Neal",
-        family = "Grantham",
-        role = c("aut", "cre"),
-        email = "neal@nsgrantham.com"
-    )
+    person("Neal", "Grantham", , "neal@nsgrantham.com", role = c("aut", "cre"))
 Description: A new stat, stat_braid(), that extends the functionality of
     geom_ribbon() to correctly fill the area between two alternating lines
     (or steps) with two different colors, and a geom, geom_braid(), that
     wraps geom_ribbon() and uses stat_braid() by default.
-URL: https://nsgrantham.github.io/ggbraid/, https://github.com/nsgrantham/ggbraid/
-BugReports: https://github.com/nsgrantham/ggbraid/issues/
 License: MIT + file LICENSE
+URL: https://nsgrantham.github.io/ggbraid/,
+    https://github.com/nsgrantham/ggbraid/
+BugReports: https://github.com/nsgrantham/ggbraid/issues/
 Depends:
     R (>= 3.4.0)
 Imports:
     ggplot2 (>= 3.0.0)
 Suggests:
-    rmarkdown,
-    knitr,
-    scales,
-    readr,
     dplyr,
-    tidyr,
     ggtext,
     glue,
-    hms
+    hms,
+    knitr,
+    readr,
+    rmarkdown,
+    scales,
+    tidyr
+VignetteBuilder: 
+    knitr
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
-VignetteBuilder: knitr
+RoxygenNote: 7.1.2
