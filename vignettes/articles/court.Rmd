@@ -1,18 +1,11 @@
 ---
 title: "US Supreme Court"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{US Supreme Court}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  out.width = "100%",
-  dpi = 300
+  comment = "#>"
 )
 
 knitr::knit_hooks$set(

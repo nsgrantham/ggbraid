@@ -1,10 +1,5 @@
 ---
 title: "NBA Finals Game"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{NBA Finals Game}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r set-chunk-opts, include = FALSE}

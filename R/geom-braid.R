@@ -1,4 +1,4 @@
-#' Braided ribbons
+#' Fill the area between two alternating series
 #'
 #' `geom_braid()` is an extension of `geom_ribbon()` that uses `stat_braid()`
 #' to correctly fill the area between two alternating series (lines or steps)
@@ -6,15 +6,17 @@
 #'
 #' @inheritParams ggplot2::layer
 #' @inheritParams ggplot2::geom_ribbon
-#' @param method Intersection and imputation method to use to braid the ribbon,
-#'   accepts `NULL`, `"line"`, or `"step"`. For `method = NULL`, the default,
-#'   print a message to the console and use `method = "line"`. For
-#'   `method = "line"`, silently braid the ribbon with two series drawn by
-#'   `geom_line()` or `geom_path()`. For `method = "step"`, silently braid the
-#'   ribbon with two series drawn by `geom_step()`.
-#' @param na.rm If `NA`, the default, missing values are imputed by
-#'   `method`. If `FALSE`, missing values are kept and appear as gaps in the
-#'   ribbon. If `TRUE`, missing values are removed.
+#' @param method The intersection and imputation method to use to braid the ribbon,
+#'   accepts `NULL`, `"line"`, or `"step"`.
+#'   * For `method = NULL`, the default, print ``geom_braid` using method = 'line'` to the console and use
+#'   `method = "line"`.
+#'   * For `method = "line"`, silently braid the ribbon with two series drawn by
+#'   `geom_line()` or `geom_path()`.
+#'   * For `method = "step"`, silently braid the ribbon with two series drawn by `geom_step()`.
+#' @param na.rm A boolean or `NA`.
+#'   * If `NA`, the default, missing values are imputed by `method`.
+#'   * If `FALSE`, missing values are kept and appear as gaps in the braided ribbon.
+#'   * If `TRUE`, missing values are removed from `.data` prior to plotting.
 #' @param geom Override the default connection with `geom_braid()`.
 #' @return A ggplot2 layer that can be added to a plot created with `ggplot()`.
 #' @examples

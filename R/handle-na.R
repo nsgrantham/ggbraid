@@ -1,6 +1,7 @@
 
+#' @importFrom stats complete.cases
 remove_na <- function(data) {
-	data[stats::complete.cases(data[, c("ymin", "ymax")]), ]
+	data[complete.cases(data[, c("ymin", "ymax")]), ]
 }
 
 
