@@ -15,18 +15,12 @@ BugReports: https://github.com/nsgrantham/ggbraid/issues/
 Depends:
     R (>= 3.4.0)
 Imports:
-    ggplot2 (>= 3.0.0)
+    ggplot2 (>= 3.0.0),
+    rlang
 Suggests:
-    dplyr,
-    ggtext,
-    glue,
-    hms,
     knitr,
-    readr,
     rmarkdown,
-    scales,
-    testthat (>= 3.0.0),
-    tidyr
+    testthat (>= 3.0.0)
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

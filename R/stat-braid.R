@@ -34,6 +34,7 @@ stat_braid <- function(
 #' @format NULL
 #' @usage NULL
 #' @keywords internal
+#' @importFrom rlang arg_match0
 #' @export
 StatBraid <- ggproto("StatBraid", Stat,
 
@@ -41,16 +42,11 @@ StatBraid <- ggproto("StatBraid", Stat,
 
 	setup_params = function(data, params) {
 		params$flipped_aes <- has_flipped_aes(data, params, range_is_orthogonal = TRUE)
-
-		msg <- character()
-		if (is.null(params$method)) {
-			params$method <- "line"
-			msg <- c(msg, paste0("method = '", params$method, "'"))
-		}
-		if (length(msg) > 0) {
-			message("`geom_braid()` using ", msg)
-		}
-
+		params$method <- arg_match0(
+			params$method %||% "line",
+			c("line", "step"),
+			arg_nm = "method"
+		)
 		params
 	},
 

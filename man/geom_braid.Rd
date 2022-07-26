@@ -3,7 +3,7 @@
 \name{geom_braid}
 \alias{geom_braid}
 \alias{stat_braid}
-\title{Braided ribbons}
+\title{Fill the area between two alternating series}
 \usage{
 geom_braid(
   mapping = NULL,
@@ -57,16 +57,22 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
-\item{method}{Intersection and imputation method to use to braid the ribbon,
-accepts \code{NULL}, \code{"line"}, or \code{"step"}. For \code{method = NULL}, the default,
-print a message to the console and use \code{method = "line"}. For
-\code{method = "line"}, silently braid the ribbon with two series drawn by
-\code{geom_line()} or \code{geom_path()}. For \code{method = "step"}, silently braid the
-ribbon with two series drawn by \code{geom_step()}.}
+\item{method}{The intersection and imputation method to use to braid the ribbon,
+accepts \code{NULL}, \code{"line"}, or \code{"step"}.
+\itemize{
+\item For \code{method = NULL}, the default, print ``geom_braid\verb{ using method = 'line'} to the console and use
+`method = "line"`.
+\item For \code{method = "line"}, silently braid the ribbon with two series drawn by
+\code{geom_line()} or \code{geom_path()}.
+\item For \code{method = "step"}, silently braid the ribbon with two series drawn by \code{geom_step()}.
+}}
 
-\item{na.rm}{If \code{NA}, the default, missing values are imputed by
-\code{method}. If \code{FALSE}, missing values are kept and appear as gaps in the
-ribbon. If \code{TRUE}, missing values are removed.}
+\item{na.rm}{A boolean or \code{NA}.
+\itemize{
+\item If \code{NA}, the default, missing values are imputed by \code{method}.
+\item If \code{FALSE}, missing values are kept and appear as gaps in the braided ribbon.
+\item If \code{TRUE}, missing values are removed from \code{.data} prior to plotting.
+}}
 
 \item{show.legend}{logical. Should this layer be included in the legends?
 \code{NA}, the default, includes if any aesthetics are mapped.
