@@ -82,7 +82,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>NBA Finals Game</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/nsgrantham/ggbraid/blob/HEAD/vignettes/articles/hoops.Rmd" class="external-link"><code>vignettes/articles/hoops.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/nsgrantham/ggbraid/blob/HEAD/vignettes/hoops.Rmd" class="external-link"><code>vignettes/hoops.Rmd</code></a></small>
       <div class="d-none name"><code>hoops.Rmd</code></div>
     </div>
 
@@ -121,8 +121,7 @@
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 02<span style="color: #949494;">'</span>33<span style="color: #949494;">"</span> GSW        1</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 02<span style="color: #949494;">'</span>43<span style="color: #949494;">"</span> CLE        1</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 02<span style="color: #949494;">'</span>43<span style="color: #949494;">"</span> CLE        1</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 119 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 119 more rows</span></span></span></code></pre></div>
 <p><code>time</code> is game time in <code>MM'SS"</code> format, <code>team</code> is the team responsible for scoring, Golden State Warriors (<code>GSW</code>) or Cleveland Cavaliers (<code>CLE</code>), and <code>points</code> is the number of points scored, either 1, 2, or 3 (or 0, simply marking the start and end of the game).</p>
 </div>
 <div class="section level2">
@@ -149,8 +148,7 @@
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 02<span style="color: #949494;">'</span>33<span style="color: #949494;">"</span> GSW        1     6</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 02<span style="color: #949494;">'</span>43<span style="color: #949494;">"</span> CLE        1     7</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 02<span style="color: #949494;">'</span>43<span style="color: #949494;">"</span> CLE        1     8</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 119 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 119 more rows</span></span></span></code></pre></div>
 <p>Now plot the cumulative scores with <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_step()</a></code>.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;Why &lt;code&gt;&lt;a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link"&gt;geom_step()&lt;/a&gt;&lt;/code&gt; rather than &lt;code&gt;&lt;a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link"&gt;geom_line()&lt;/a&gt;&lt;/code&gt;? After a team scores points, it remains at that score until the next time it scores points — there is a distinct jump, or step, that happens. Using &lt;code&gt;&lt;a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link"&gt;geom_line()&lt;/a&gt;&lt;/code&gt; to connect the scores between these two moments would suggest that the team is gradually accumulating points over time, and that is not the case.&lt;/p&gt;'><sup>1</sup></a></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">hoops_score</span><span class="op">)</span> <span class="op">+</span></span>
@@ -191,8 +189,7 @@
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 02<span style="color: #949494;">'</span>57<span style="color: #949494;">"</span>     8     8     0</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 03<span style="color: #949494;">'</span>23<span style="color: #949494;">"</span>     8    10     2</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 03<span style="color: #949494;">'</span>35<span style="color: #949494;">"</span>    10    10     0</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 98 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 98 more rows</span></span></span></code></pre></div>
 <p>Now plot <code>hoops_wide</code> and add a horizontal line at 0 indicating a tied game.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">hoops_wide</span><span class="op">)</span> <span class="op">+</span></span>

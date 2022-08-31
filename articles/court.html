@@ -82,7 +82,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>US Supreme Court</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/nsgrantham/ggbraid/blob/HEAD/vignettes/articles/court.Rmd" class="external-link"><code>vignettes/articles/court.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/nsgrantham/ggbraid/blob/HEAD/vignettes/court.Rmd" class="external-link"><code>vignettes/court.Rmd</code></a></small>
       <div class="d-none name"><code>court.Rmd</code></div>
     </div>
 
@@ -128,14 +128,13 @@
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">2</span>013   0.066</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">2</span>012   0.244</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>011   0.302</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 74 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 74 more rows</span></span></span></code></pre></div>
 <p>Let’s plot the data in <code>court</code> by mapping <code>year</code> to <code>x</code>, <code>mqscore</code> to <code>y</code>, and applying the line geometry with <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line()</a></code>. Also, place a horizontal line at <code>yintercept = 0</code> with <code><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline()</a></code> to better identify the point at which an ideology</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">court</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">mqscore</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="court_files/figure-html/court-plot-up-down-1.png" width="2187.5"></p>
+<p><img src="court_files/figure-html/court-plot-up-down-1.png" width="100%"></p>
 <p>A nice, simple plot.</p>
 <p>Another way to convey this relationship is to instead map <code>mqscore</code> to <code>x</code> and <code>year</code> to <code>y</code>. With this mapping, Martin-Quinn scores that indicate a conservative ideology are to the right of zero and scores that indicate a liberal ideology are to the left. This matches the left-right political spectrum that we are accustomed to, although it does put a temporal variable on the y axis which can feel strange.</p>
 <p>In any case, let’s give it a try.</p>
@@ -144,7 +143,7 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">court</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mqscore</span>, y <span class="op">=</span> <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="court_files/figure-html/court-plot-left-right-wrong-1.png" width="2187.5"></p>
+<p><img src="court_files/figure-html/court-plot-left-right-wrong-1.png" width="100%"></p>
 <p>Hmmm, that isn’t right. What’s gone wrong?</p>
 <p>The problem is that <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line()</a></code> connects observations in the order of the variable on the x axis. So, because we have mapped <code>mqscore</code> to <code>x</code>, <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line()</a></code> orders the data by <code>mqscore</code> before drawing lines between observations. That’s not what we want, we’d rather the geom leave the order as is.</p>
 <p>To avoid this ordering behavior, we can use <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_path()</a></code> in place of <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line()</a></code>.</p>
@@ -152,7 +151,7 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">court</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mqscore</span>, y <span class="op">=</span> <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_path</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="court_files/figure-html/court-plot-left-right-correct-1.png" width="2187.5"></p>
+<p><img src="court_files/figure-html/court-plot-left-right-correct-1.png" width="100%"></p>
 <p>Much better.</p>
 <p>But this plot could really use some color. We can use <code><a href="../reference/geom_braid.html">geom_braid()</a></code> to fill the area between the “median justice” Martin-Quinn score line and the x intercept at 0.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -163,7 +162,7 @@
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="va">mqscore</span>, xmax <span class="op">=</span> <span class="fl">0</span>, fill <span class="op">=</span> <span class="va">mqscore</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span>,</span>
 <span>    method <span class="op">=</span> <span class="st">"line"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="court_files/figure-html/court-plot-geom-braid-1.png" width="2187.5"></p>
+<p><img src="court_files/figure-html/court-plot-geom-braid-1.png" width="100%"></p>
 <p>Touching this up a bit, we can remove the vertical line at zero because it is no longer necessary, and we can remove the <code>fill</code> aesthetic legend because it doesn’t add any value. While we’re at it, let’s change the colors and add some transparency.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">court</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mqscore</span>, y <span class="op">=</span> <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -175,7 +174,7 @@
 <span>  <span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="court_files/figure-html/court-plot-geom-braid-improved-1.png" width="2187.5"></p>
+<p><img src="court_files/figure-html/court-plot-geom-braid-improved-1.png" width="100%"></p>
 <p>Voila.</p>
 </div>
 <div class="section level2">
@@ -208,8 +207,7 @@
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">2</span>020 SGBreyer     -<span style="color: #BB0000;">1.89</span> </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">2</span>020 SSotomayor   -<span style="color: #BB0000;">3.94</span> </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>019 BMKavanaugh   0.552</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 754 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 754 more rows</span></span></span></code></pre></div>
 <p>Let’s add individual Martin-Quinn score lines for every justice.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">court</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mqscore</span>, y <span class="op">=</span> <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -222,7 +220,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_path</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group <span class="op">=</span> <span class="va">name</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">justices</span>, size <span class="op">=</span> <span class="fl">0.3</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="court_files/figure-html/justices-plot-not-rescaled-1.png" width="2187.5"></p>
+<p><img src="court_files/figure-html/justices-plot-not-rescaled-1.png" width="100%"></p>
 <p>Wow.</p>
 <p>It should come as no surprise that individual justices hold much stronger ideologies than the hypothetical “median justice”. But I did not expect the spread to be quite so wide.</p>
 <p>Now, the goal of this plot is not to communicate exact Martin-Quinn score values, but rather to convey the ideological lean of the court and its justices relative to one another. So let’s apply a function to pull the largest values closer to zero and push the smaller values under one slightly away from zero. We’ll call this function <code>moderate()</code> because it primarily reduces the extreme liberal and conservative ideology scores. And because we’ve altered the scores, let’s remove the x axis ticks and text.</p>
@@ -246,7 +244,7 @@
 <span>    axis.ticks.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="court_files/figure-html/justices-plot-rescaled-1.png" width="2187.5"></p>
+<p><img src="court_files/figure-html/justices-plot-rescaled-1.png" width="100%"></p>
 <p>This is looking better.</p>
 <p>Let’s select a handful of justices to highlight.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -280,8 +278,7 @@
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">2</span>016 Thomas      3.18</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">2</span>016 Ginsburg   -<span style="color: #BB0000;">2.74</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>015 Thomas      3.18</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 226 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 226 more rows</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">selected_justices_text</span> <span class="op">&lt;-</span> <span class="va">selected_justices</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -321,7 +318,7 @@
 <span>    axis.ticks.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="court_files/figure-html/plot-with-selected-justices-1.png" width="2187.5"></p>
+<p><img src="court_files/figure-html/plot-with-selected-justices-1.png" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="final-ruling">Final Ruling<a class="anchor" aria-label="anchor" href="#final-ruling"></a>
@@ -364,7 +361,7 @@
 <span>    axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="court_files/figure-html/final-plot-1.png" width="2187.5"></p>
+<p><img src="court_files/figure-html/final-plot-1.png" width="100%"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

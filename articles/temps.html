@@ -82,7 +82,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Average Daily Temperatures</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/nsgrantham/ggbraid/blob/HEAD/vignettes/articles/temps.Rmd" class="external-link"><code>vignettes/articles/temps.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/nsgrantham/ggbraid/blob/HEAD/vignettes/temps.Rmd" class="external-link"><code>vignettes/temps.Rmd</code></a></small>
       <div class="d-none name"><code>temps.Rmd</code></div>
     </div>
 
@@ -118,8 +118,7 @@
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> New York 2021-01-08  32  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> New York 2021-01-09  30.5</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> New York 2021-01-10  35  </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 720 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 720 more rows</span></span></span></code></pre></div>
 <p><code>city</code> is <code>New York</code> or <code>San Francisco</code>, <code>date</code> is a calendar date in the <code>YYYY-MM-DD</code> format, and <code>avg</code> is the average temperature recorded in degrees Fahrenheit (°F) and rounded to the nearest half degree.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;For those who use degrees Celsius: 0°C is 32°F, 10°C is 50°F, 20°C is 68°F, and 30°C is 86°F.&lt;/p&gt;"><sup>2</sup></a></p>
 <p>What do the daily average temperatures look like?</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -187,8 +186,7 @@
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2021-01-08  32    52.5</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2021-01-09  30.5  52  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2021-01-10  35    50.5</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 355 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with 355 more rows</span></span></span></code></pre></div>
 <p>Now we can add a new layer to <code>p</code> with <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code> using <code>temps_wide</code>. Map <code>date</code> to <code>x</code>, <code>ny</code> to <code>ymin</code>, and <code>sf</code> to <code>ymax</code>.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Why not the other way around, with &lt;code&gt;sf&lt;/code&gt; to &lt;code&gt;ymin&lt;/code&gt; and &lt;code&gt;ny&lt;/code&gt; to &lt;code&gt;ymax&lt;/code&gt;? That’s fine too because the lines alternate over/under one another.&lt;/p&gt;"><sup>3</sup></a> Finally, add some transparency with <code>alpha = 0.3</code>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">+</span></span>
@@ -322,7 +320,8 @@
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, ymin <span class="op">=</span> <span class="va">ny</span>, ymax <span class="op">=</span> <span class="va">sf</span>, fill <span class="op">=</span> <span class="va">sf</span> <span class="op">&gt;</span> <span class="va">ny</span><span class="op">)</span>,</span>
 <span>    data <span class="op">=</span> <span class="va">temps_wide</span>,</span>
 <span>    alpha <span class="op">=</span> <span class="fl">0.7</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
+<span>  <span class="op">)</span></span>
+<span><span class="co">#&gt; `geom_braid()` using method = 'line'</span></span></code></pre></div>
 <p><img src="temps_files/figure-html/geom-braid-with-fill-1.png" width="100%"></p>
 <p>There we go!</p>
 <p>Notice the message from <code><a href="../reference/geom_braid.html">geom_braid()</a></code> that it is using <code>method = 'line'</code>. Since we’ve drawn lines with <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line()</a></code> we must use <code>method = 'line'</code> to determine the point at which the lines intersect when the intersection occurs between two rows in the data. We can silence this message by explicity including <code>method = 'line'</code> within <code><a href="../reference/geom_braid.html">geom_braid()</a></code>.</p>
