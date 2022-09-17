@@ -14,7 +14,13 @@ provides a geom, `geom_braid()`, that wraps `geom_ribbon()` and uses
 
 ## Installation
 
-You can install the development version of ggbraid from GitHub with:
+Install the production version of ggbraid from CRAN with:
+
+``` r
+install.packages("ggbraid")
+```
+
+Or install the development version of ggbraid from GitHub with:
 
 ``` r
 # install.packages("remotes")
@@ -121,7 +127,6 @@ ggplot() +
   geom_line(aes(x, y, linetype = z), data = df_long) +
   geom_braid(aes(x, ymin = a, ymax = b, fill = a < b), data = df_wide, alpha = 0.6) +
   guides(linetype = "none", fill = "none")
-#> `geom_braid()` using method = 'line'
 ```
 
 <img src="man/figures/README-geom-braid-with-fill-1.png" width="100%" />
