@@ -58,11 +58,10 @@ StatBraid <- ggproto("StatBraid", Stat,
 		data$flipped_aes <- params$flipped_aes
 		data <- flip_data(data, params$flipped_aes)
 
-		data <- with(data, data[order(x), ])
 		data <- with(data, data[!is.na(x), ])
+		data <- with(data, data[order(PANEL, x), ])
 
 		has_fill <- "fill" %in% colnames(data)
-
 		if (has_fill) {
 			data <- transform(data, braid = as.logical(as.integer(as.factor(fill)) - 1))
 		} else {
@@ -72,13 +71,15 @@ StatBraid <- ggproto("StatBraid", Stat,
 		data$group[is.na(data$braid)] <- -1
 
 		if (any(is.na(data[, c("ymin", "ymax")]))) {
+			data <- split(data, ~ PANEL)
 			if (is.na(params$na.rm)) {
-				data <- impute_na(data, method = params$method)
+				data <- lapply(data, impute_na, method = params$method)
 			} else if (params$na.rm) {
-				data <- remove_na(data)
+				data <- lapply(data, remove_na)
 			} else {
-				data <- keep_na(data, method = params$method)
+				data <- lapply(data, keep_na, method = params$method)
 			}
+			data <- do.call(rbind, data)
 		}
 
 		flip_data(data, params$flipped_aes)
