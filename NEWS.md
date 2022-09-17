@@ -1,3 +1,8 @@
+# ggbraid 0.2.3
+
+* Fix error when using `geom_braid(..., na.rm = FALSE)` in combination with `facet_grid()`
+
+
 # ggbraid 0.2.2
 
 Released 2022-05-08
