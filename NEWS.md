@@ -2,6 +2,8 @@
 
 * Fix error when using `geom_braid(..., na.rm = FALSE)` in combination with `facet_grid()`
 
+* Fix error in `compute_layer()` that may arise when using `geom_braid(..., na.rm = NA)`
+
 
 # ggbraid 0.2.2
 

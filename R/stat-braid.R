@@ -85,6 +85,13 @@ StatBraid <- ggproto("StatBraid", Stat,
 		flip_data(data, params$flipped_aes)
 	},
 
+	compute_layer = function(self, data, params, layout) {
+		# compute_layer() throws an error if na.rm is NA (the default) -- since NAs
+		# are already handled in setup_data(), set na.rm to TRUE before proceeding.
+		params$na.rm <- TRUE
+		ggproto_parent(Stat, self)$compute_layer(data, params, layout)
+	},
+
 	compute_panel = function(data, scales, method = NULL, flipped_aes = FALSE) {
 		data <- flip_data(data, flipped_aes)
 
