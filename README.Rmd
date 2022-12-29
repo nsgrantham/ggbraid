@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ggbraid <img src="man/figures/logo.png" align="right" width="200" style="float:right; width:200px;" />
+# ggbraid <img src="man/figures/logo.png" style="float:right" width="200" />
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -80,11 +80,13 @@ ggplot() +
   guides(linetype = "none", fill = "none")
 ```
 
-Chaos. What happened?
+Chaos. 
 
-This is the "Unbraided Ribbon Problem".
+What happened? Is this a bug in `geom_ribbon()`?
 
-Not to worry, we can braid the unbraided ribbon with ggbraid — simply replace `geom_ribbon()` with `geom_braid()`.
+No, it's not a bug. The problem is that we haven’t dealt with line intersections properly. I call this the [Unbraided Ribbon Problem](https://nsgrantham.github.io/ggbraid/articles/temps.html#the-unbraided-ribbon-problem).
+
+To fix it, replace `geom_ribbon()` with `geom_braid()` from ggbraid.
 
 ```{r geom-braid-with-fill}
 ggplot() +

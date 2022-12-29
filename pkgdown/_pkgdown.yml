@@ -21,7 +21,9 @@ articles:
 - title: Articles
   navbar: ~
   contents:
-  - temps
-  - hoops
-  - court
+  - articles/temps
+  - articles/hoops
+  - articles/court
 
+figures:
+  dpi: 300

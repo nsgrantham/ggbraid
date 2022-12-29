@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ggbraid <img src="man/figures/logo.png" align="right" width="200" style="float:right; width:200px;" />
+# ggbraid <img src="man/figures/logo.png" style="float:right" width="200" />
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -109,12 +109,15 @@ ggplot() +
 
 <img src="man/figures/README-geom-ribbon-with-fill-1.png" width="100%" />
 
-Chaos. What happened?
+Chaos.
 
-This is the “Unbraided Ribbon Problem”.
+What happened? Is this a bug in `geom_ribbon()`?
 
-Not to worry, we can braid the unbraided ribbon with ggbraid — simply
-replace `geom_ribbon()` with `geom_braid()`.
+No, it’s not a bug. The problem is that we haven’t dealt with line
+intersections properly. I call this the [Unbraided Ribbon
+Problem](https://nsgrantham.github.io/ggbraid/articles/temps.html#the-unbraided-ribbon-problem).
+
+To fix it, replace `geom_ribbon()` with `geom_braid()` from ggbraid.
 
 ``` r
 ggplot() +
@@ -128,13 +131,12 @@ ggplot() +
 
 ## Articles
 
--   For an introduction to ggbraid and the “Unbraided Ribbon Problem”,
-    see [Average Daily
-    Temperatures](https://nsgrantham.github.io/ggbraid/articles/temps.html).
+- For an introduction to ggbraid and the “Unbraided Ribbon Problem”, see
+  [Average Daily
+  Temperatures](https://nsgrantham.github.io/ggbraid/articles/temps.html).
 
--   To learn how to use `geom_braid()` with `geom_step()`, see [NBA
-    Finals
-    Game](https://nsgrantham.github.io/ggbraid/articles/hoops.html).
+- To learn how to use `geom_braid()` with `geom_step()`, see [NBA Finals
+  Game](https://nsgrantham.github.io/ggbraid/articles/hoops.html).
 
--   ggbraid supports flipped aesthetics, see [US Supreme
-    Court](https://nsgrantham.github.io/ggbraid/articles/court.html).
+- ggbraid supports flipped aesthetics, see [US Supreme
+  Court](https://nsgrantham.github.io/ggbraid/articles/court.html).

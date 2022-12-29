@@ -4,10 +4,12 @@
 
 * Fix error in `compute_layer()` that may arise when using `geom_braid(..., na.rm = NA)`
 
+* Fix HTML validation problems
+
+* Convert vignettes to articles so they appear on the pkgdown website but are not included in the package itself
+
 
 # ggbraid 0.2.2
-
-Released 2022-05-08
 
 * Add documentation for datasets `temps` and `hoops`
 
@@ -16,13 +18,10 @@ Released 2022-05-08
 
 # ggbraid 0.2.1
 
-Released 2022-04-27
-
 * Fixed problem where braiding fails when `x` is non-numeric
 
-# ggbraid 0.2.0
 
-Released 2022-04-25
+# ggbraid 0.2.0
 
 * Handle `NA`s with `na.rm = NA` (the default), `na.rm = FALSE`, and 
   `na.rm = TRUE`.
@@ -35,9 +34,8 @@ Released 2022-04-25
 
 * Add "US Supreme Court" vignette and finish "NBA Finals Game" vignette.
 
-# ggbraid 0.1.0
 
-Released 2022-03-22
+# ggbraid 0.1.0
 
 * Add `stat_braid()` and `geom_braid()`.
 
