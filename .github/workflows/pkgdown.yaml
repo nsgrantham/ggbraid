@@ -31,14 +31,14 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: |
-            pkgdown
-            ggplot2
-            dplyr
-            tidyr
-            readr
-            ggtext
-            glue
-            hms
+            any::pkgdown
+            any::ggplot2
+            any::dplyr
+            any::tidyr
+            any::readr
+            any::ggtext
+            any::glue
+            any::hms
           needs: website
 
       - name: Deploy package
