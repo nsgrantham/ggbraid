@@ -245,7 +245,7 @@ Let's put some finishing touches on the plot.
 decades <- data.frame(year = seq(1940, 2020, by = 10))
 
 ggplot(court, aes(x = moderate(mqscore), y = year)) +
-  geom_path(size = 0.8) +
+  geom_path(linewidth = 0.8) +
   geom_braid(
     aes(xmin = moderate(mqscore), xmax = 0, fill = moderate(mqscore) < 0),
     method = "line",
