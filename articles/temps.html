@@ -179,18 +179,12 @@ article.</p>
 <span>    legend.direction <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
 <span>    legend.key.size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">2</span>, <span class="st">"line"</span><span class="op">)</span>,</span>
 <span>    legend.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,</span>
-<span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
-<span>    panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
+<span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
+<span>    panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
 <span>    panel.grid.minor.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    panel.grid.minor.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<div class="alert alert-info">
-<p>#&gt;  [1m [22mThe <code>size</code> argument of
-<code><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line()</a></code> is deprecated as of ggplot2 3.4.0. #&gt;
- [36mℹ [39m Please use the <code>linewidth</code> argument instead.</p>
-</div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
 <span><span class="va">p</span></span></code></pre></div>
 <p><img src="temps_files/figure-html/temps-plot-polished-1.png" width="100%"></p>
 <p>Much better.</p>
@@ -209,7 +203,7 @@ map to <code>ymin</code> and <code>ymax</code>.</p>
 the <code>tidyr</code> package, taking column names from
 <code>city</code> and values from <code>avg</code>. Call the new data
 frame <code>temps_wide</code>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">temps_wide</span> <span class="op">&lt;-</span> <span class="va">temps</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">city</span>, values_from <span class="op">=</span> <span class="va">avg</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>ny <span class="op">=</span> <span class="va">`New York`</span>, sf <span class="op">=</span> <span class="va">`San Francisco`</span><span class="op">)</span></span>
@@ -236,7 +230,7 @@ frame <code>temps_wide</code>.</p>
 &lt;code&gt;ymin&lt;/code&gt; and &lt;code&gt;ny&lt;/code&gt; to &lt;code&gt;ymax&lt;/code&gt;? That’s fine
 too because the lines alternate over/under one another.&lt;/p&gt;"><sup>3</sup></a> Finally,
 add some transparency with <code>alpha = 0.3</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, ymin <span class="op">=</span> <span class="va">ny</span>, ymax <span class="op">=</span> <span class="va">sf</span><span class="op">)</span>,</span>
@@ -251,7 +245,7 @@ could have one color when New York is hotter than San Francisco and
 another color when New York is colder than San Francisco.</p>
 <p>This shouldn’t be hard to do. Map <code>sf &gt; ny</code> to
 <code>fill</code> in <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code> and…</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, ymin <span class="op">=</span> <span class="va">ny</span>, ymax <span class="op">=</span> <span class="va">sf</span>, fill <span class="op">=</span> <span class="va">sf</span> <span class="op">&gt;</span> <span class="va">ny</span><span class="op">)</span>,</span>
@@ -259,15 +253,16 @@ another color when New York is colder than San Francisco.</p>
 <span>    alpha <span class="op">=</span> <span class="fl">0.7</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="temps_files/figure-html/geom-ribbon-with-fill-1.png" width="100%"></p>
-<p>Chaos. What happened?</p>
+<p>Chaos.</p>
+<p>What happened? Is this a bug in <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code>?</p>
+<p>No, it’s not a bug. The problem is that <strong>we haven’t dealt with
+line intersections properly.</strong> I call this the Unbraided Ribbon
+Problem.</p>
 </div>
 <div class="section level2">
 <h2 id="the-unbraided-ribbon-problem">The Unbraided Ribbon Problem<a class="anchor" aria-label="anchor" href="#the-unbraided-ribbon-problem"></a>
 </h2>
-<p>Is this a bug in <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code>?</p>
-<p>No, it’s not a bug. The problem is that <strong>we haven’t dealt with
-line intersections properly.</strong></p>
-<p>For example, consider rows 80-82 from <code>temps_wide</code>:</p>
+<p>Consider rows 80-82 from <code>temps_wide</code>:</p>
 <table class="table">
 <thead><tr class="header">
 <th>date</th>
@@ -292,11 +287,10 @@ line intersections properly.</strong></p>
 </tr>
 </tbody>
 </table>
-<p>After we have pass <code>temps_wide</code> to
-<code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code> and map <code>date</code> to <code>x</code>,
-<code>ny</code> to <code>ymin</code>, <code>sf</code> to
-<code>ymax</code>, and <code>sf &gt; ny</code> to <code>fill</code>, we
-get the following:</p>
+<p>After we pass <code>temps_wide</code> to <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code>
+and map <code>date</code> to <code>x</code>, <code>ny</code> to
+<code>ymin</code>, <code>sf</code> to <code>ymax</code>, and
+<code>sf &gt; ny</code> to <code>fill</code>, we get the following:</p>
 <table class="table">
 <thead><tr class="header">
 <th>x</th>
@@ -381,12 +375,12 @@ produces an infinite number of intersection points and requires braiding
 to fix.</p>
 </div>
 <div class="section level2">
-<h2 id="braiding-with-ggbraid">Braiding with ggbraid<a class="anchor" aria-label="anchor" href="#braiding-with-ggbraid"></a>
+<h2 id="braiding-ribbons-with-ggbraid">Braiding Ribbons with ggbraid<a class="anchor" aria-label="anchor" href="#braiding-ribbons-with-ggbraid"></a>
 </h2>
 <p>The functions in ggbraid take care of all the braiding for you.
 Simply replace <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code> with
 <code><a href="../reference/geom_braid.html">geom_braid()</a></code>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_braid.html">geom_braid</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, ymin <span class="op">=</span> <span class="va">ny</span>, ymax <span class="op">=</span> <span class="va">sf</span>, fill <span class="op">=</span> <span class="va">sf</span> <span class="op">&gt;</span> <span class="va">ny</span><span class="op">)</span>,</span>
@@ -408,7 +402,7 @@ necessary braiding operations on it with <code><a href="../reference/geom_braid.
 passes the result to <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code> for drawing. If we’d
 like, we can still use <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code> and set
 <code>stat = 'braid'</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, ymin <span class="op">=</span> <span class="va">ny</span>, ymax <span class="op">=</span> <span class="va">sf</span>, fill <span class="op">=</span> <span class="va">sf</span> <span class="op">&gt;</span> <span class="va">ny</span><span class="op">)</span>,</span>
@@ -424,7 +418,7 @@ including <code>method = 'line'</code>.</p>
 what they represent. This can happen in a legend (which we’ve turned off
 with the <code>guides(fill = "none")</code> layer in <code>p</code>).
 Another possibility is to provide text annotations on the plot.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hues</span> <span class="op">&lt;-</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/hue_pal.html" class="external-link">hue_pal</a></span><span class="op">(</span><span class="op">)</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>  <span class="co"># ggplot2 default color palette</span></span>
 <span></span>
 <span><span class="va">p</span> <span class="op">+</span></span>

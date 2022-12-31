@@ -267,29 +267,14 @@ what’s going on.</p>
 <span>    plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://wilkelab.org/ggtext/reference/element_markdown.html" class="external-link">element_markdown</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">14</span>, margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span>b <span class="op">=</span> <span class="fl">1</span>, unit <span class="op">=</span> <span class="st">"line"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    axis.text.y <span class="op">=</span> <span class="fu"><a href="https://wilkelab.org/ggtext/reference/element_markdown.html" class="external-link">element_markdown</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey60"</span><span class="op">)</span>,</span>
-<span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
-<span>    panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>,</span>
+<span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>    panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>,</span>
 <span>    panel.grid.minor.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    panel.grid.minor.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<div class="alert alert-info">
-<p>#&gt;  [1m [22mThe <code>size</code> argument of
-<code><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line()</a></code> is deprecated as of ggplot2 3.4.0. #&gt;
- [36mℹ [39m Please use the <code>linewidth</code> argument instead.</p>
-</div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
 <span><span class="va">p</span></span></code></pre></div>
 <p><img src="hoops_files/figure-html/hoops-wide-plot-polished-1.png" width="100%"></p>
-<p>With the data displayed this way, it’s easy to see how the game
-progressed.</p>
-<p>After an initial struggle in Q1, the Cavaliers took an early lead in
-Q2 only to have the Warriors claw it all back to even the score at
-halftime. In Q3, the Warriors claimed the lead, then lost it, and
-reclaimed it. And in Q4, the Cavaliers again evened the score, ending
-the game with a tie and sending the teams into a 5-minute overtime
-(OT1). The Warriors quickly gained the upper hand in overtime and won
-the game by 10 points.</p>
 </div>
 <div class="section level2">
 <h2 id="braiding-steps">Braiding Steps<a class="anchor" aria-label="anchor" href="#braiding-steps"></a>
@@ -297,7 +282,7 @@ the game by 10 points.</p>
 <p>As an additional detail, suppose we want to fill the region between
 the score margin steps and the horizontal line at 0.</p>
 <p>Maybe we can use <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code> to do this?</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, ymin <span class="op">=</span> <span class="va">diff</span>, ymax <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span>
@@ -313,7 +298,7 @@ can use to draw “step ribbons.”</p>
 <p>ggbraid offers similar functionality. Simply replace
 <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code> with <code><a href="../reference/geom_braid.html">geom_braid()</a></code> and set
 <code>method = "step"</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_braid.html">geom_braid</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, ymin <span class="op">=</span> <span class="va">diff</span>, ymax <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span>
@@ -323,7 +308,7 @@ can use to draw “step ribbons.”</p>
 <p><img src="hoops_files/figure-html/geom-braid-hoops-without-fill-1.png" width="100%"></p>
 <p>While we’re at it, why don’t we color the ribbon differently
 depending on the team that is winning?</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/geom_braid.html">geom_braid</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, ymin <span class="op">=</span> <span class="va">diff</span>, ymax <span class="op">=</span> <span class="fl">0</span>, fill <span class="op">=</span> <span class="va">diff</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>,</span>
@@ -331,6 +316,15 @@ depending on the team that is winning?</p>
 <span>    alpha <span class="op">=</span> <span class="fl">0.7</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="hoops_files/figure-html/geom-braid-hoops-with-fill-1.png" width="100%"></p>
+<p>With the data displayed this way, it’s easy to see how the game
+progressed.</p>
+<p>After an initial struggle in Q1, the Cavaliers took an early lead in
+Q2 only to have the Warriors claw it all back to even the score at
+halftime. In Q3, the Warriors claimed the lead, then lost it, and
+reclaimed it. And in Q4, the Cavaliers again evened the score, ending
+the game with a tie and sending the teams into a 5-minute overtime
+(OT1). The Warriors quickly gained the upper hand in overtime and won
+the game by 10 points.</p>
 <p>😎🏀</p>
 </div>
 
