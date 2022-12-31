@@ -55,7 +55,7 @@ court <- read_csv(
 court
 ```
 
-Let's plot the data in `court` by mapping `year` to `x`, `mqscore` to `y`, and applying the line geometry with `geom_line()`. Also, place a horizontal line at `yintercept = 0` with `geom_hline()` to better identify the point at which an ideology  
+Let's plot the data in `court` by mapping `year` to `x`, `mqscore` to `y`, and applying the line geometry with `geom_line()`. Also, place a horizontal line at `yintercept = 0` with `geom_hline()` to identify a politically neutral judicial ideology.
 
 ```{r court-plot-up-down}
 ggplot(court, aes(x = year, y = mqscore)) +
@@ -117,7 +117,7 @@ ggplot(court, aes(x = mqscore, y = year)) +
   guides(fill = "none")
 ```
 
-Voila.
+Voilà.
 
 ## Justice Ideology
 
@@ -148,7 +148,7 @@ ggplot(court, aes(x = mqscore, y = year)) +
     method = "line",
     alpha = 0.3
   ) +
-  geom_path(aes(group = name), data = justices, size = 0.3, alpha = 0.2) +
+  geom_path(aes(group = name), data = justices, linewidth = 0.3, alpha = 0.2) +
   scale_fill_manual(values = c("red", "blue")) +
   guides(fill = "none")
 ```
@@ -157,7 +157,7 @@ Wow.
 
 It should come as no surprise that individual justices hold much stronger ideologies than the hypothetical "median justice". But I did not expect the spread to be quite so wide.
 
-Now, the goal of this plot is not to communicate exact Martin-Quinn score values, but rather to convey the ideological lean of the court and its justices relative to one another. So let's apply a function to pull the largest values closer to zero and push the smaller values under one slightly away from zero. We'll call this function `moderate()` because it primarily reduces the extreme liberal and conservative ideology scores. And because we've altered the scores, let's remove the x axis ticks and text.
+Now, the goal of this plot is not to communicate _exact_ Martin-Quinn score values, but rather to convey the ideological lean of the court and its justices relative to one another. So let's apply a function to pull the largest values closer to zero and push the smaller values under one slightly away from zero. We'll call this function `moderate()` because it primarily reduces the extreme liberal and conservative ideology scores. And because we've altered the scores, let's remove the x axis ticks and text.
 
 ```{r justices-plot-rescaled, fig.height = 12}
 moderate <- function(x) sign(x) * sqrt(abs(x))
@@ -223,8 +223,8 @@ ggplot(court, aes(x = moderate(mqscore), y = year)) +
     method = "line",
     alpha = 0.3
   ) +
-  geom_path(aes(group = name), data = justices, size = 0.3, alpha = 0.2) +
-  geom_path(aes(group = name), data = selected_justices, size = 0.5, alpha = 0.4) +
+  geom_path(aes(group = name), data = justices, linewidth = 0.3, alpha = 0.2) +
+  geom_path(aes(group = name), data = selected_justices, linewidth = 0.5, alpha = 0.4) +
   geom_text(aes(label = name), data = selected_justices_text, size = 3, alpha = 0.7, vjust = -0.7) +
   scale_fill_manual(values = c("red", "blue")) +
   guides(fill = "none") +
@@ -251,8 +251,8 @@ ggplot(court, aes(x = moderate(mqscore), y = year)) +
     method = "line",
     alpha = 0.3
   ) +
-  geom_path(aes(group = name), data = justices, size = 0.3, alpha = 0.2) +
-  geom_path(aes(group = name), data = selected_justices, size = 0.5, alpha = 0.4) +
+  geom_path(aes(group = name), data = justices, linewidth = 0.3, alpha = 0.2) +
+  geom_path(aes(group = name), data = selected_justices, linewidth = 0.5, alpha = 0.4) +
   geom_text(aes(label = name), data = selected_justices_text, size = 4, alpha = 0.7, vjust = -0.7) +
   geom_text(aes(label = year, x = 0), data = decades, size = 4, alpha = 0.4) +
   annotate("rect", xmin = -Inf, xmax = 0, ymin = -Inf, ymax = Inf, fill = "blue", alpha = 0.06) +

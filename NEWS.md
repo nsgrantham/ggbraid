@@ -1,24 +1,26 @@
 # ggbraid 0.2.3
 
-* Fix error when using `geom_braid(..., na.rm = FALSE)` in combination with `facet_grid()`
+* Fix error when using `geom_braid(..., na.rm = FALSE)` in combination with `facet_grid()`.
 
-* Fix error in `compute_layer()` that may arise when using `geom_braid(..., na.rm = NA)`
+* Fix error in `compute_layer()` that may arise when using `geom_braid(..., na.rm = NA)`.
 
-* Fix HTML validation problems
+* Fix HTML validation problems.
 
-* Convert vignettes to articles so they appear on the pkgdown website but are not included in the package itself
+* Convert vignettes to articles so they appear on the pkgdown website but are not included in the package itself.
+
+* Minor README and article edits.
 
 
 # ggbraid 0.2.2
 
-* Add documentation for datasets `temps` and `hoops`
+* Add documentation for datasets `temps` and `hoops`.
 
-* Fix warnings and notes from R CMD check
+* Fix warnings and notes from R CMD check.
 
 
 # ggbraid 0.2.1
 
-* Fixed problem where braiding fails when `x` is non-numeric
+* Fix problem where braiding fails when `x` is non-numeric.
 
 
 # ggbraid 0.2.0

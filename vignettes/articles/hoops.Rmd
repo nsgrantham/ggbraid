@@ -156,18 +156,14 @@ p <- ggplot(hoops_wide) +
     plot.subtitle = element_markdown(size = 14, margin = margin(b = 1, unit = "line")),
     axis.text.y = element_markdown(),
     axis.text.x = element_text(color = "grey60"),
-    panel.grid.major.x = element_line(size = 0.5),
-    panel.grid.major.y = element_line(size = 0.3),
+    panel.grid.major.x = element_line(linewidth = 0.5),
+    panel.grid.major.y = element_line(linewidth = 0.3),
     panel.grid.minor.x = element_blank(),
     panel.grid.minor.y = element_blank()
   )
 
 p
 ```
-
-With the data displayed this way, it's easy to see how the game progressed.
-
-After an initial struggle in Q1, the Cavaliers took an early lead in Q2 only to have the Warriors claw it all back to even the score at halftime. In Q3, the Warriors claimed the lead, then lost it, and reclaimed it. And in Q4, the Cavaliers again evened the score, ending the game with a tie and sending the teams into a 5-minute overtime (OT1). The Warriors quickly gained the upper hand in overtime and won the game by 10 points.
 
 ## Braiding Steps
 
@@ -208,5 +204,9 @@ p +
     alpha = 0.7
   )
 ```
+
+With the data displayed this way, it's easy to see how the game progressed.
+
+After an initial struggle in Q1, the Cavaliers took an early lead in Q2 only to have the Warriors claw it all back to even the score at halftime. In Q3, the Warriors claimed the lead, then lost it, and reclaimed it. And in Q4, the Cavaliers again evened the score, ending the game with a tie and sending the teams into a 5-minute overtime (OT1). The Warriors quickly gained the upper hand in overtime and won the game by 10 points.
 
 😎🏀

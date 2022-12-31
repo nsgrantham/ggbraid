@@ -80,8 +80,8 @@ p <- ggplot() +
   	legend.direction = "horizontal",
   	legend.key.size = unit(2, "line"),
   	legend.text = element_text(size = 12),
-    panel.grid.major.x = element_line(size = 0.4),
-    panel.grid.major.y = element_line(size = 0.4),
+    panel.grid.major.x = element_line(linewidth = 0.4),
+    panel.grid.major.y = element_line(linewidth = 0.4),
     panel.grid.minor.x = element_blank(),
     panel.grid.minor.y = element_blank()
   )
@@ -133,15 +133,15 @@ p +
   )
 ```
 
-Chaos. What happened?
+Chaos. 
+
+What happened? Is this a bug in `geom_ribbon()`?
+
+No, it's not a bug. The problem is that **we haven't dealt with line intersections properly.** I call this the Unbraided Ribbon Problem.
 
 ## The Unbraided Ribbon Problem
 
-Is this a bug in `geom_ribbon()`?
-
-No, it's not a bug. The problem is that **we haven't dealt with line intersections properly.**
-
-For example, consider rows 80-82 from `temps_wide`:
+Consider rows 80-82 from `temps_wide`:
 
 | date       | ny   | sf   |
 | ---------- | ---- | ---- |
@@ -149,7 +149,7 @@ For example, consider rows 80-82 from `temps_wide`:
 | 2021-03-22 | 52.0 | 52.0 |
 | 2021-03-23 | 54.5 | 56.5 |
 
-After we have pass `temps_wide` to `geom_ribbon()` and map `date` to `x`, `ny` to `ymin`, `sf` to `ymax`, and `sf > ny` to `fill`, we get the following:
+After we pass `temps_wide` to `geom_ribbon()` and map `date` to `x`, `ny` to `ymin`, `sf` to `ymax`, and `sf > ny` to `fill`, we get the following:
 
 | x     | ymin | ymax | fill  |
 | ----- | ---- | ---- | ----- |
@@ -178,7 +178,7 @@ And the intersection described here is not the only type that requires braiding.
 
 There are instances where the two lines intersect _between_ two rows in the data. In these cases, we must use a mathematical formula to determine the exact point at which the lines intersect and braid the ribbon accordingly. There are also instances where both lines are vertical at the same `x`, an uncommon situation but one that produces an infinite number of intersection points and requires braiding to fix.
 
-## Braiding with ggbraid
+## Braiding Ribbons with ggbraid
 
 The functions in ggbraid take care of all the braiding for you.
 Simply replace `geom_ribbon()` with `geom_braid()`.

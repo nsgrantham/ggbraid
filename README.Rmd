@@ -14,9 +14,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ggbraid <img src="man/figures/logo.png" style="float:right" width="200" />
+# ggbraid <img src="man/figures/logo.png" style="float:right" width="200"/>
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 ggbraid provides a new stat, `stat_braid()`, that extends the functionality of `geom_ribbon()` to correctly fill the area between two alternating lines (or steps) with two different colors. ggbraid also provides a geom, `geom_braid()`, that wraps `geom_ribbon()` and uses `stat_braid()` by default.
@@ -69,7 +70,7 @@ ggplot() +
   guides(linetype = "none")
 ```
 
-Can we fill the area between the two lines with two different colors? One color when the solid line is _above_ the dashed line, and a different color when the solid line is _below_ the dashed line?
+Can we fill the area between the two lines with two different colors? One color when the solid line is *above* the dashed line, and a different color when the solid line is *below* the dashed line?
 
 That shouldn't be hard. Let's map `a < b` to the `fill` aesthetic in `geom_ribbon()` and...
 
@@ -80,11 +81,11 @@ ggplot() +
   guides(linetype = "none", fill = "none")
 ```
 
-Chaos. 
+Chaos.
 
 What happened? Is this a bug in `geom_ribbon()`?
 
-No, it's not a bug. The problem is that we haven’t dealt with line intersections properly. I call this the [Unbraided Ribbon Problem](https://nsgrantham.github.io/ggbraid/articles/temps.html#the-unbraided-ribbon-problem).
+No, it's not a bug. The problem is that we haven't dealt with line intersections properly. I call this the [Unbraided Ribbon Problem](https://nsgrantham.github.io/ggbraid/articles/temps.html#the-unbraided-ribbon-problem).
 
 To fix it, replace `geom_ribbon()` with `geom_braid()` from ggbraid.
 
@@ -95,11 +96,10 @@ ggplot() +
   guides(linetype = "none", fill = "none")
 ```
 
-
 ## Articles
 
-- For an introduction to ggbraid and the "Unbraided Ribbon Problem", see [Average Daily Temperatures](https://nsgrantham.github.io/ggbraid/articles/temps.html).
+-   For an introduction to ggbraid and the "Unbraided Ribbon Problem", see [Average Daily Temperatures](https://nsgrantham.github.io/ggbraid/articles/temps.html).
 
-- To learn how to use `geom_braid()` with `geom_step()`, see [NBA Finals Game](https://nsgrantham.github.io/ggbraid/articles/hoops.html).
+-   To learn how to use `geom_braid()` with `geom_step()`, see [NBA Finals Game](https://nsgrantham.github.io/ggbraid/articles/hoops.html).
 
-- ggbraid supports flipped aesthetics, see [US Supreme Court](https://nsgrantham.github.io/ggbraid/articles/court.html).
+-   ggbraid supports flipped aesthetics, see [US Supreme Court](https://nsgrantham.github.io/ggbraid/articles/court.html).
